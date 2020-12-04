@@ -1,0 +1,9 @@
+{
+    "name": "Metode Spill",
+    "short_name": "Metode",
+    "lang": "no",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "white",
+    "theme_color": "white"
+}
