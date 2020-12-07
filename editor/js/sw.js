@@ -1,4 +1,4 @@
-var cacheName = 'metodeSpillPWA';
+var cacheName = 'jsonFragmentsEditor-pwa';
 var filesToCache = [
     '/',
     '/index.html',
