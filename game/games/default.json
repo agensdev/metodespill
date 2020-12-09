@@ -1,0 +1,67 @@
+{
+    "gameid": "default",
+    "description": "Basic template for game testing",
+    "initialState": {
+        "name": "Christine",
+        "money": 0,
+        "cards": true
+    },
+    "start": "Velkommen",
+    "scenes": {
+        "Velkommen": {
+            "headerImage": {
+                "src": "./images/plane.png",
+                "alt": "spitfier fly"
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Velkommen {$name}"
+                },
+                {
+                    "type": "text",
+                    "text": "1943 og krigen er inne i en kritisk fase de allierte. De allierte mister for mange fly!  Som svar har Winston Churhill opprettet forskningsinstitusjonen Royal Airforce Operations Research, med base i Luton utenfor London."
+                },
+                {
+                    "type": "link",
+                    "url": "http://www.uia.no"
+                },
+                {
+                    "type": "img",
+                    "src": "./images/plane.png",
+                    "alt": "spitfier fly på vingene"
+                }
+            ],
+            "actions": [
+                {
+                    "type": "button",
+                    "title": "Start",
+                    "description": "Trykk på knappen for å starte spillet"
+                },
+                {
+                    "type": "button",
+                    "title": "stop",
+                    "description": "Stop spillet",
+                    "target": "Next"
+                }
+            ]
+        },
+        "Next": {
+            "headerImage": {
+                "src": "./images/plane.png",
+                "alt": "spitfier fly"
+            },
+            "content": [
+                {
+                    "type": "text",
+                    "text": "Velkommen Alle sammen {$name}"
+                },
+                {
+                    "type": "link",
+                    "url": "http://www.uia.no"
+                }
+            ],
+            "actions": []
+        }
+    }
+}

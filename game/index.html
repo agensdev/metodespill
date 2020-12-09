@@ -11,17 +11,30 @@
     <meta name="apple-mobile-web-app-title" content="Metode spill">
     <meta name="msapplication-TileImage" content="images/icon-metode-144.png">
     <meta name="msapplication-TileColor" content="#FFFFFF">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Ranchers&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="css/base.css">
     <title>Metode spill</title>
 </head>
 
-<body class="fullscreen">
-    <div class="container">
+<body>
 
-        <h1>Heisann Sveisann</h1>
+    <template id="sceneTemplate">
+        <div class="scene">
+            <img class="sceneImage" />
+            <div class="content">
+            </div>
+            <div class="actions">
+            </div>
+        </div>
+        <div class="break"></div>
+        <div class="footer">
+        </div>
+    </template>
 
-    </div>
+    <script src="js/app.mjs" type="module"></script>
 </body>
-<script src="js/app.js" />
+
 </html>
