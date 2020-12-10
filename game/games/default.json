@@ -4,11 +4,29 @@
     "initialState": {
         "name": "Christine",
         "money": 0,
-        "cards": true
+        "cards": true,
+        "start": false
     },
     "start": "Velkommen",
     "scenes": {
         "Velkommen": {
+            "statechange": [
+                {
+                    "type": "set",
+                    "target": "money",
+                    "value": 1000
+                },
+                {
+                    "type": "inc",
+                    "target": "money",
+                    "value": 100
+                },
+                {
+                    "type": "dec",
+                    "target": "money",
+                    "value": 90
+                }
+            ],
             "headerImage": {
                 "src": "./images/plane.png",
                 "alt": "spitfier fly"
@@ -16,33 +34,62 @@
             "content": [
                 {
                     "type": "text",
-                    "text": "Velkommen {$name}"
-                },
-                {
-                    "type": "text",
-                    "text": "1943 og krigen er inne i en kritisk fase de allierte. De allierte mister for mange fly!  Som svar har Winston Churhill opprettet forskningsinstitusjonen Royal Airforce Operations Research, med base i Luton utenfor London."
-                },
-                {
-                    "type": "link",
-                    "url": "http://www.uia.no"
-                },
-                {
-                    "type": "img",
-                    "src": "./images/plane.png",
-                    "alt": "spitfier fly på vingene"
+                    "text": "Velkommen {$name}",
+                    "conditions": [
+                        {
+                            "target": "start",
+                            "value": true
+                        }
+                    ]
                 }
             ],
             "actions": [
                 {
                     "type": "button",
                     "title": "Start",
-                    "description": "Trykk på knappen for å starte spillet"
+                    "description": "Trykk her for å vise tekst.",
+                    "conditions": [
+                        {
+                            "target": "start",
+                            "value": false
+                        }
+                    ],
+                    "statechange": [
+                        {
+                            "type": "set",
+                            "target": "start",
+                            "value": true
+                        }
+                    ]
                 },
                 {
                     "type": "button",
                     "title": "stop",
-                    "description": "Stop spillet",
-                    "target": "Next"
+                    "description": "fortsett",
+                    "target": "next",
+                    "conditions": [
+                        {
+                            "target": "start",
+                            "value": true
+                        }
+                    ],
+                    "statechange": [
+                        {
+                            "type": "set",
+                            "target": "money",
+                            "value": 100
+                        },
+                        {
+                            "type": "inc",
+                            "target": "money",
+                            "value": 10
+                        },
+                        {
+                            "type": "dec",
+                            "target": "money",
+                            "value": 9
+                        }
+                    ]
                 }
             ]
         },
