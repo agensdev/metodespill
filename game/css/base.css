@@ -72,6 +72,14 @@ body {
     display: inline-block;
 }
 
+.content > header {
+
+    background-color: white;
+
+}
+
+
+
 
 p {
     line-height: 19px;

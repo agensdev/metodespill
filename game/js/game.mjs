@@ -1,25 +1,29 @@
 import d from './debug.mjs';
-import ErrorMessages from "./l8n.mjs"
-import { copy } from './util.mjs'
+import ErrorMessages from './l8n.mjs'
+import { copy, merge, validateConditions } from './util.mjs'
+import Badges from './badges.mjs'
 
 export default class Game {
-    constructor(gameID, container) {
+    constructor(gameID, container, presetState) {
         this.gameID = gameID;
         this.sourceCode = null;
         this.container = container;
 
-        this.state = null;
+        this.state = presetState || null;
         this.scenes = null;
         this.currentSceneId = null;
         this.currentSceneData = null;
         this.currentSceneUI = null;
 
+        this.badges = null;
     }
 
     run() {
-        this.state = copy(this.sourceCode.initialState);
+        this.state = this.state ? merge(copy(this.sourceCode.initialState), this.state) : copy(this.sourceCode.initialState);
         this.scenes = copy(this.sourceCode.scenes);
+        this.badges = new Badges(this.sourceCode.badges)
         this.loadScene(this.sourceCode.start, this.scenes)
+
     }
 
     loadScene(sceneId, scenes) {
@@ -31,10 +35,17 @@ export default class Game {
         if (this.currentSceneData) {
             this.applyStatChanges(this.currentSceneData.statechange)
             this.applyHeaderImage(this.currentSceneData.headerImage)
+            this.applyHeader(this.currentSceneData.header)
             this.applyContent(this.currentSceneData.content);
             this.applyActions(this.currentSceneData.actions);
+
+            let newBadges = this.badges.findNewlyEarndBadges(this.state);
+            if (newBadges.length > 0) {
+                d(newBadges);
+            }
+
         } else {
-            //TODO : falback for feil. 
+            //TODO : skall vi ha falback for feil. ?
         }
 
         this.container.appendChild(this.currentSceneUI);
@@ -49,11 +60,23 @@ export default class Game {
         }
     }
 
+    applyHeader(content) {
+        let header = this.currentSceneUI.querySelector("header");
+        if (content.header) {
+            content.header.forEach(node => {
+                let p = this.createTextNode(content.header);
+                header.appendChild(p);
+            });
+        } else {
+            //Hide ?
+        }
+    }
+
     applyContent(content) {
         if (content) {
             let contentUI = this.currentSceneUI.querySelector(".content")
             content.forEach(element => {
-                if (this.validateConditions(element.conditions)) {
+                if (validateConditions(element.conditions, this.state)) {
                     let node = this.createContentNode(element);
                     if (node) {
                         contentUI.appendChild(node);
@@ -67,9 +90,7 @@ export default class Game {
         if (actions) {
             let actionsUI = this.currentSceneUI.querySelector(".actions");
             actions.forEach(action => {
-
-                if (this.validateConditions(action.conditions)) {
-
+                if (validateConditions(action.conditions, this.state)) {
                     let bt = document.createElement("button");
                     bt.innerText = this.parsText(action.description);
                     bt.title = action.title;
@@ -84,16 +105,6 @@ export default class Game {
                 }
             });
         }
-    }
-
-    validateConditions(conditions) {
-        if (conditions == null || conditions == undefined) {
-            return true;
-        }
-        console.log(conditions)
-        return conditions.some(condition => this.state[condition.target] == condition.value);
-
-        return value;
     }
 
     applyStatChanges(changes) {

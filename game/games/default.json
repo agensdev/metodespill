@@ -13,24 +13,20 @@
             "statechange": [
                 {
                     "type": "set",
-                    "target": "money",
-                    "value": 1000
-                },
-                {
-                    "type": "inc",
-                    "target": "money",
-                    "value": 100
-                },
-                {
-                    "type": "dec",
-                    "target": "money",
-                    "value": 90
+                    "target": "name",
+                    "value": "Christian"
                 }
             ],
             "headerImage": {
                 "src": "./images/plane.png",
                 "alt": "spitfier fly"
             },
+            "header": [
+                {
+                    "type": "text",
+                    "text": "1943, RAF Operations Research, Luton. Krigen er i en kritisk fase for de allierte."
+                }
+            ],
             "content": [
                 {
                     "type": "text",
@@ -91,24 +87,42 @@
                         }
                     ]
                 }
+            ],
+            "dialogue": [
+                {
+                    "portrait": "battenberry.png",
+                    "name": "Sir Battenberry",
+                    "text": "Grønn te er klart overlegen."
+                }
+            ]
+        }
+    },
+    "badges": [
+        {
+            "name": "Te lover",
+            "description": "Selv når verden står i flammer tar du ting med knusende ro og dirkker en god kopp te",
+            "img": "badgeTeLover.png",
+            "display": true,
+            "version": 1,
+            "conditions": [
+                {
+                    "target": "teDrikking",
+                    "value": 2
+                }
             ]
         },
-        "Next": {
-            "headerImage": {
-                "src": "./images/plane.png",
-                "alt": "spitfier fly"
-            },
-            "content": [
+        {
+            "name": "Level 1 Complete",
+            "description": "Du har fullført nivå 1.....",
+            "img": "badgelevel1.png",
+            "display": false,
+            "version": 1,
+            "conditions": [
                 {
-                    "type": "text",
-                    "text": "Velkommen Alle sammen {$name}"
-                },
-                {
-                    "type": "link",
-                    "url": "http://www.uia.no"
+                    "target": "levelComplete",
+                    "value": true
                 }
-            ],
-            "actions": []
+            ]
         }
-    }
+    ]
 }
