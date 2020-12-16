@@ -1,25 +1,16 @@
 {
     "gameid": "default",
+    "gameName": "Level 1",
     "description": "Basic template for game testing",
-    "initialState": {
-        "name": "Christine",
-        "money": 0,
-        "cards": true,
-        "start": false
-    },
+    "initialState": {},
     "start": "Velkommen",
     "scenes": {
         "Velkommen": {
-            "statechange": [
-                {
-                    "type": "set",
-                    "target": "name",
-                    "value": "Christian"
-                }
-            ],
+            "statechange": [],
+            "clearSceneHistory": false,
             "headerImage": {
-                "src": "./images/plane.png",
-                "alt": "spitfier fly"
+                "src": "plane.png",
+                "alt": "To RAF fly"
             },
             "header": [
                 {
@@ -29,27 +20,21 @@
             ],
             "content": [
                 {
+                    "type": "monolog",
+                    "img": "images/battenbery.png",
+                    "npcName": "Sir Battenbery",
+                    "text": "De allierte mister for mange fly! Nå har Statsminister Churchill gitt oss i oppdrag å bruke statistikk og forskingingsmetode for å gjøre noe med det.<br/> Siden du er den eneste av oss som har studert statistikk og metode, så har du blitt valgt som leder av forskningsinstitusjonen."
+                },
+                {
                     "type": "text",
-                    "text": "Velkommen {$name}",
-                    "conditions": [
-                        {
-                            "target": "start",
-                            "value": true
-                        }
-                    ]
+                    "text": "Velkommen {$playerName}"
                 }
             ],
             "actions": [
                 {
                     "type": "button",
-                    "title": "Start",
-                    "description": "Trykk her for å vise tekst.",
-                    "conditions": [
-                        {
-                            "target": "start",
-                            "value": false
-                        }
-                    ],
+                    "title": "Start knapp",
+                    "description": "Vi setter i gang med forskningen",
                     "statechange": [
                         {
                             "type": "set",
@@ -61,47 +46,49 @@
                 {
                     "type": "button",
                     "title": "stop",
-                    "description": "fortsett",
+                    "description": "På tide med en kopp te",
                     "target": "next",
-                    "conditions": [
-                        {
-                            "target": "start",
-                            "value": true
-                        }
-                    ],
                     "statechange": [
                         {
                             "type": "set",
-                            "target": "money",
-                            "value": 100
+                            "target": "teDrikking",
+                            "value": 1
                         },
                         {
-                            "type": "inc",
-                            "target": "money",
-                            "value": 10
-                        },
-                        {
-                            "type": "dec",
-                            "target": "money",
-                            "value": 9
+                            "type": "set",
+                            "target": "drunk",
+                            "value": 0
                         }
                     ]
                 }
             ],
-            "dialogue": [
-                {
-                    "portrait": "battenberry.png",
+            "auxiliaryContent": {
+                "peek": {
+                    "img": "images/battenbery.png",
                     "name": "Sir Battenberry",
-                    "text": "Grønn te er klart overlegen."
-                }
-            ]
+                    "text": "Vil du ha et lite tips om te, {$playerName}?"
+                },
+                "content": [
+                    {
+                        "type": "monolog",
+                        "img": "battenberry.png",
+                        "name": "Sir Battenberry",
+                        "text": "Si aldri nei til en kopp te!<br/>Bortsett fra når Europa brenner, da bør du si nei til en kopp te."
+                    },
+                    {
+                        "type": "video",
+                        "text": "Se video >",
+                        "URL": " "
+                    }
+                ]
+            }
         }
     },
     "badges": [
         {
             "name": "Te lover",
             "description": "Selv når verden står i flammer tar du ting med knusende ro og dirkker en god kopp te",
-            "img": "badgeTeLover.png",
+            "img": "badge_te.svg",
             "display": true,
             "version": 1,
             "conditions": [

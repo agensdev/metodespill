@@ -14,12 +14,25 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Ranchers&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="css/base.css">
     <title>Metode spill</title>
 </head>
 
 <body>
+
+    <template id="monologTemplate">
+        <div class="monolog">
+            <header>
+                <img src="#" alt="npc" class="npcPortrait">
+                <p class="actorName"></p>
+            </header>
+            <div class="monologContent">
+            </div>
+        </div>
+        </div>
+    </template>
 
     <template id="dialogueTemplate">
         <div>
@@ -33,11 +46,25 @@
         </div>
     </template>
 
+    <template id="peekTemplate">
+        <div class="peek">
+
+            <div class="s1">
+                <img class="peekImage">
+            </div>
+
+            <div id="peekMessage" class="s9">
+
+            </div>
+        </div>
+
+    </template>
+
     <template id="sceneTemplate">
         <div class="scene">
             <header>
+                <div id="headerContent"></div>
             </header>
-            <img class="sceneImage" />
             <div class="content">
             </div>
             <div class="actions">

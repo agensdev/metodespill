@@ -7,7 +7,10 @@ const merge = function (a, b) {
 }
 
 const validateConditions = function (conditions, state) {
-    if (!conditions || !state) {
+    if (!conditions) {
+        return true;
+    }
+    if (!state) {
         return false;
     }
     return conditions.every((condition) => state[condition.target] == condition.value);
@@ -25,4 +28,23 @@ const pickRandom = function (items) {
     return items[rnd(items.length)];
 }
 
-export { copy, merge, pickRandom, rnd, validateConditions };
+const animateCSS = function (element, animation, prefix = 'animate__') {
+    // We create a Promise and return it
+    return new Promise((resolve, reject) => {
+
+        const animationName = `${prefix}${animation}`;
+        const node = document.querySelector(element);
+        node.classList.add(`${prefix}animated`, animationName);
+
+        function handleAnimationEnd() {
+            node.classList.remove(`${prefix}animated`, animationName);
+            resolve('Animation ended');
+        }
+
+        node.addEventListener('animationend', handleAnimationEnd, { once: true });
+    });
+}
+
+
+
+export { copy, merge, pickRandom, rnd, validateConditions, animateCSS };

@@ -1,6 +1,6 @@
 import d from './debug.mjs';
 import ErrorMessages from './l8n.mjs'
-import { copy, merge, validateConditions } from './util.mjs'
+import { copy, merge, validateConditions, animateCSS } from './util.mjs'
 import Badges from './badges.mjs'
 
 export default class Game {
@@ -23,21 +23,27 @@ export default class Game {
         this.scenes = copy(this.sourceCode.scenes);
         this.badges = new Badges(this.sourceCode.badges)
         this.loadScene(this.sourceCode.start, this.scenes)
-
     }
 
     loadScene(sceneId, scenes) {
         this.clearScene();
         this.sceneId = sceneId;
-        this.currentSceneUI = document.querySelector("#sceneTemplate").content.cloneNode(true);
         this.currentSceneData = this.findScene(sceneId, this.scenes);
 
+        let sceneIsReset = false;
+        if (!this.currentSceneUI || this.currentSceneData.clearSceneHistory) {
+            sceneIsReset = true;
+            this.currentSceneUI = document.querySelector("#sceneTemplate").content.cloneNode(true);
+        }
+
         if (this.currentSceneData) {
-            this.applyStatChanges(this.currentSceneData.statechange)
-            this.applyHeaderImage(this.currentSceneData.headerImage)
-            this.applyHeader(this.currentSceneData.header)
-            this.applyContent(this.currentSceneData.content);
-            this.applyActions(this.currentSceneData.actions);
+            this.applyStatChanges(this.currentSceneData.statechange);
+            this.applyHeaderImage(this.currentSceneData.headerImage, this.currentSceneUI);
+            this.applyHeader(this.currentSceneData.header, this.currentSceneUI);
+            this.applyContent(this.currentSceneData.content, this.currentSceneUI);
+            this.applyActions(this.currentSceneData.actions, this.currentSceneUI);
+
+            this.applyAuxiliaryContent(this.currentSceneData.auxiliaryContent, this.currentSceneUI)
 
             let newBadges = this.badges.findNewlyEarndBadges(this.state);
             if (newBadges.length > 0) {
@@ -48,23 +54,60 @@ export default class Game {
             //TODO : skall vi ha falback for feil. ?
         }
 
-        this.container.appendChild(this.currentSceneUI);
-
-    }
-
-    applyHeaderImage(headerImage) {
-        if (headerImage) {
-            let img = this.currentSceneUI.querySelector("img");
-            img.src = headerImage.src;
-            img.alt = headerImage.alt;
+        if (sceneIsReset) {
+            this.container.appendChild(this.currentSceneUI);
         }
     }
 
-    applyHeader(content) {
-        let header = this.currentSceneUI.querySelector("header");
-        if (content.header) {
-            content.header.forEach(node => {
-                let p = this.createTextNode(content.header);
+    disableAllButtonsIn() {
+
+    }
+
+    applyAuxiliaryContent(contnet, container) {
+        const footer = container.querySelector(".footer");
+        if (contnet) {
+            const node = document.querySelector("#peekTemplate").content.cloneNode(true);
+            const img = node.querySelector("img");
+            img.src = contnet.peek.img;
+            const msg = node.querySelector("#peekMessage")
+            msg.innerText = this.parsText(contnet.peek.text);
+            footer.appendChild(node)
+
+            footer.addEventListener("click", () => {
+                this.displayAuxiliaryContent(this.currentSceneData.auxiliaryContent, this.currentSceneUI)
+            })
+        }
+    }
+
+    displayAuxiliaryContent(content, container) {
+
+        const modal = document.createElement("div");
+        modal.style.setProperty('--animate-duration', '2s');
+        modal.classList.add("modal", "animate__animated");
+
+
+
+
+        document.body.querySelector(".wrapper").prepend(modal)
+        modal.classList.add("animate__fadeInUpBig");
+    }
+
+    applyHeaderImage(headerImage, container) {
+        let header = container.querySelector("header");
+        if (headerImage) {
+            header.style.backgroundImage = `url(images/${headerImage.src})`;
+            header.classList.add("headerWithBgImage");
+        } else {
+            header.classList.remove("headerWithBgImage");
+            header.style.backgroundImage = ""
+        }
+    }
+
+    applyHeader(content, container) {
+        let header = container.querySelector("header > #headerContent");
+        if (content) {
+            content.forEach(node => {
+                let p = this.createTextNode(node.text);
                 header.appendChild(p);
             });
         } else {
@@ -72,9 +115,9 @@ export default class Game {
         }
     }
 
-    applyContent(content) {
+    applyContent(content, container) {
         if (content) {
-            let contentUI = this.currentSceneUI.querySelector(".content")
+            let contentUI = container.querySelector(".content")
             content.forEach(element => {
                 if (validateConditions(element.conditions, this.state)) {
                     let node = this.createContentNode(element);
@@ -86,9 +129,9 @@ export default class Game {
         }
     }
 
-    applyActions(actions) {
+    applyActions(actions, container) {
         if (actions) {
-            let actionsUI = this.currentSceneUI.querySelector(".actions");
+            let actionsUI = container.querySelector(".actions");
             actions.forEach(action => {
                 if (validateConditions(action.conditions, this.state)) {
                     let bt = document.createElement("button");
@@ -138,31 +181,50 @@ export default class Game {
     createContentNode(description) {
         let node = null;
         switch (description.type) {
-            case "dialogue": node = this.createDialogueNode(description)
+            case "monolog": node = this.createMonologNode(description);
                 break;
-            case "text": node = this.createTextNode(description)
+            case "dialogue": node = this.createDialogueNode(description);
                 break;
-            case "link": node = this.createLinkNode(description)
+            case "text": node = this.createTextNode(description.text);
                 break;
-            case "img": node = this.createImageNode(description)
+            case "link": node = this.createLinkNode(description);
+                break;
+            case "img": node = this.createImageNode(description);
                 break;
             default: d(`Typen ${description.type} is not a recognized type`);
         }
         return node;
     }
 
+    createMonologNode(description) {
+
+        let node = document.querySelector("#monologTemplate").content.cloneNode(true);
+        let portrait = node.querySelector(".npcPortrait");
+        portrait.src = description.img;
+
+        let name = node.querySelector(".actorName");
+        name.innerText = description.npcName;
+
+
+        let monolog = node.querySelector(".monologContent");
+        let p = this.createTextNode(description.text);
+        monolog.appendChild(p);
+
+        return node;
+    }
+
     createDialogueNode(description) {
 
-        let node = document.querySelector("dialogueTemplate").cloneNode(true);
+        let node = document.querySelector("#dialogueTemplate").content.cloneNode(true);
         let portrait = node.querySelector("npcPortrait");
-        portrait.src = description.portrait;
+        portrait.src = description.img;
 
         let name = node.querySelector("#actorName");
         name.innerText = description.npcName;
 
 
         let dioalouge = node.querySelector(".dialogue");
-        let p = createTextNode(description);
+        let p = createTextNode(description.text);
         dioalouge.appendChild(p);
 
         return node;
@@ -183,23 +245,26 @@ export default class Game {
         return a;
     }
 
-    createTextNode(description) {
+    createTextNode(text) {
         let p = document.createElement("p");
-        p.innerText = this.parsText(description.text);
+        p.innerHTML = this.parsText(text);
         return p;
     }
 
     parsText(text) {
-        const stateKeys = /{\$\S+}/gm;
-        let matches = text.match(stateKeys);
-        if (matches) {
-            matches.forEach(match => {
-                let key = match.replace(/[{,\$,}]/g, "").trim();
-                let stateValue = this.state[key];
-                text = text.replace(match, stateValue);
-            });
+        if (text) {
+            const stateKeys = /{\$\S+}/gm;
+            let matches = text.match(stateKeys);
+            if (matches) {
+                matches.forEach(match => {
+                    let key = match.replace(/[{,\$,}]/g, "").trim();
+                    let stateValue = this.state[key];
+                    text = text.replace(match, stateValue);
+                });
+            }
+            return text;
         }
-        return text;
+        return '';
     }
 
     clearScene() {

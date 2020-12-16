@@ -20,6 +20,7 @@ class Application {
         const reset = urlParams.get('resetPWA');
 
         if (reset) {
+            d("Deliting PWA cache")
             caches.delete("metodeSpillPWA");
         }
 
@@ -36,7 +37,7 @@ document.body.appendChild(container)
 
 window.onload = async () => {
     await app.registerServiceWorker()
-    let name = "";
+    let name = "Crs";
     while (name.length == 0) {
         name = window.prompt("Hva heter du?");
     }
