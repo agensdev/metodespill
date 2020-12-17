@@ -70,15 +70,10 @@
                 },
                 "content": [
                     {
-                        "type": "monolog",
-                        "img": "battenberry.png",
+                        "type": "dialogue",
+                        "img": "images/battenbery.png",
                         "name": "Sir Battenberry",
                         "text": "Si aldri nei til en kopp te!<br/>Bortsett fra når Europa brenner, da bør du si nei til en kopp te."
-                    },
-                    {
-                        "type": "video",
-                        "text": "Se video >",
-                        "URL": " "
                     }
                 ]
             }

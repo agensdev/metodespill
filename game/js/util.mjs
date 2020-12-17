@@ -33,7 +33,8 @@ const animateCSS = function (element, animation, prefix = 'animate__') {
     return new Promise((resolve, reject) => {
 
         const animationName = `${prefix}${animation}`;
-        const node = document.querySelector(element);
+        const node = element;//document.querySelector(element);
+        node.style.setProperty('--animate-duration', '1s');
         node.classList.add(`${prefix}animated`, animationName);
 
         function handleAnimationEnd() {

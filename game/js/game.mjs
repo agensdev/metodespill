@@ -15,17 +15,33 @@ export default class Game {
         this.currentSceneData = null;
         this.currentSceneUI = null;
 
+        this.overlay = null;
+
         this.badges = null;
     }
 
     run() {
+        d("Run game")
         this.state = this.state ? merge(copy(this.sourceCode.initialState), this.state) : copy(this.sourceCode.initialState);
         this.scenes = copy(this.sourceCode.scenes);
         this.badges = new Badges(this.sourceCode.badges)
+
+        this.overlay = document.body.querySelector(".exp");
+        this.overlay.addEventListener("click", e => {
+            d("Remove modal")
+            this.overlay.classList.remove("clickable")
+            animateCSS(this.overlay.firstChild, "fadeOutDownBig").then(evt => {
+                this.overlay.removeChild(this.overlay.firstChild);
+                // Hvorfor virker ikke this.currentSceneUI her?
+                window.document.querySelector(".footer").classList.remove("disabled");
+            });
+        })
+
         this.loadScene(this.sourceCode.start, this.scenes)
     }
 
     loadScene(sceneId, scenes) {
+        d("Load Scene");
         this.clearScene();
         this.sceneId = sceneId;
         this.currentSceneData = this.findScene(sceneId, this.scenes);
@@ -34,9 +50,14 @@ export default class Game {
         if (!this.currentSceneUI || this.currentSceneData.clearSceneHistory) {
             sceneIsReset = true;
             this.currentSceneUI = document.querySelector("#sceneTemplate").content.cloneNode(true);
+        } else {
+            this.disableAllButtonsIn(this.currentSceneUI.querySelector(".content"));
         }
 
         if (this.currentSceneData) {
+
+            this.addBookmark(this.sceneId, this.currentSceneUI.querySelector(".content"));
+
             this.applyStatChanges(this.currentSceneData.statechange);
             this.applyHeaderImage(this.currentSceneData.headerImage, this.currentSceneUI);
             this.applyHeader(this.currentSceneData.header, this.currentSceneUI);
@@ -59,8 +80,18 @@ export default class Game {
         }
     }
 
-    disableAllButtonsIn() {
 
+    addBookmark(bookmarkID, container) {
+        const bookmark = document.createElement("a");
+        bookmark.href = `#${bookmarkID}`
+        container.appendChild(bookmark);
+    }
+
+    disableAllButtonsIn(container) {
+        const buttons = container.querySelector("button");
+        buttons.forEach(bt => {
+            bt.setAttribute("disabled", "true")
+        });
     }
 
     applyAuxiliaryContent(contnet, container) {
@@ -73,23 +104,29 @@ export default class Game {
             msg.innerText = this.parsText(contnet.peek.text);
             footer.appendChild(node)
 
-            footer.addEventListener("click", () => {
-                this.displayAuxiliaryContent(this.currentSceneData.auxiliaryContent, this.currentSceneUI)
+            footer.addEventListener("click", (e) => {
+                footer.classList.add("disabled")
+                this.displayAuxiliaryContent(this.currentSceneData.auxiliaryContent.content)
             })
         }
     }
 
-    displayAuxiliaryContent(content, container) {
-
+    displayAuxiliaryContent(content) {
+        d("Display modal")
+        const container = document.body.querySelector(".exp");
         const modal = document.createElement("div");
-        modal.style.setProperty('--animate-duration', '2s');
-        modal.classList.add("modal", "animate__animated");
+        modal.classList.add("modal");
+        const div = document.createElement("div");
+        div.classList.add("content");
+        modal.appendChild(div);
 
 
+        this.applyContent(content, modal)
 
-
-        document.body.querySelector(".wrapper").prepend(modal)
-        modal.classList.add("animate__fadeInUpBig");
+        container.appendChild(modal);
+        animateCSS(modal, "fadeInUpBig").then(e => {
+            container.classList.add("clickable");
+        })
     }
 
     applyHeaderImage(headerImage, container) {
@@ -216,15 +253,15 @@ export default class Game {
     createDialogueNode(description) {
 
         let node = document.querySelector("#dialogueTemplate").content.cloneNode(true);
-        let portrait = node.querySelector("npcPortrait");
+        let portrait = node.querySelector("#npcPortrait");
         portrait.src = description.img;
 
         let name = node.querySelector("#actorName");
-        name.innerText = description.npcName;
+        name.innerText = description.name;
 
 
         let dioalouge = node.querySelector(".dialogue");
-        let p = createTextNode(description.text);
+        let p = this.createTextNode(description.text);
         dioalouge.appendChild(p);
 
         return node;

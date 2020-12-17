@@ -37,7 +37,7 @@ document.body.appendChild(container)
 
 window.onload = async () => {
     await app.registerServiceWorker()
-    let name = "";
+    let name = "Christian";
     while (name.length == 0) {
         name = window.prompt("Hva heter du?");
     }
