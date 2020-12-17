@@ -5,6 +5,12 @@ import Badges from './badges.mjs'
 
 export default class Game {
     constructor(gameID, container, presetState) {
+
+        if (Game._instance) {
+            throw new Error("Singleton classes can't be instantiated more than once.")
+        }
+        Game._instance = this;
+
         this.gameID = gameID;
         this.sourceCode = null;
         this.container = container;
@@ -18,6 +24,8 @@ export default class Game {
         this.overlay = null;
 
         this.badges = null;
+
+
     }
 
     run() {
@@ -42,20 +50,24 @@ export default class Game {
 
     loadScene(sceneId, scenes) {
         d("Load Scene");
-        this.clearScene();
         this.sceneId = sceneId;
         this.currentSceneData = this.findScene(sceneId, this.scenes);
 
         let sceneIsReset = false;
-        if (!this.currentSceneUI || this.currentSceneData.clearSceneHistory) {
-            sceneIsReset = true;
-            this.currentSceneUI = document.querySelector("#sceneTemplate").content.cloneNode(true);
-        } else {
+        //if (!this.currentSceneUI || this.currentSceneData.clearSceneHistory) {
+        d("Reset scene flow")
+        sceneIsReset = true;
+        this.clearScene();
+        this.currentSceneUI = document.querySelector("#sceneTemplate").content.cloneNode(true);
+        this.container.appendChild(this.currentSceneUI);
+        this.currentSceneUI = this.container.querySelector("#holder");
+        /*} else {
+            d("Add scene flow")
             this.disableAllButtonsIn(this.currentSceneUI.querySelector(".content"));
-        }
+        }*/
 
         if (this.currentSceneData) {
-
+            d("construct scene")
             this.addBookmark(this.sceneId, this.currentSceneUI.querySelector(".content"));
 
             this.applyStatChanges(this.currentSceneData.statechange);
@@ -63,7 +75,6 @@ export default class Game {
             this.applyHeader(this.currentSceneData.header, this.currentSceneUI);
             this.applyContent(this.currentSceneData.content, this.currentSceneUI);
             this.applyActions(this.currentSceneData.actions, this.currentSceneUI);
-
             this.applyAuxiliaryContent(this.currentSceneData.auxiliaryContent, this.currentSceneUI)
 
             let newBadges = this.badges.findNewlyEarndBadges(this.state);
@@ -75,9 +86,7 @@ export default class Game {
             //TODO : skall vi ha falback for feil. ?
         }
 
-        if (sceneIsReset) {
-            this.container.appendChild(this.currentSceneUI);
-        }
+
     }
 
 
@@ -132,7 +141,7 @@ export default class Game {
     applyHeaderImage(headerImage, container) {
         let header = container.querySelector("header");
         if (headerImage) {
-            header.style.backgroundImage = `url(images/${headerImage.src})`;
+            header.style.backgroundImage = `url(${headerImage.src})`;
             header.classList.add("headerWithBgImage");
         } else {
             header.classList.remove("headerWithBgImage");
@@ -142,13 +151,13 @@ export default class Game {
 
     applyHeader(content, container) {
         let header = container.querySelector("header > #headerContent");
-        if (content) {
+        if (content && content.length > 0) {
             content.forEach(node => {
                 let p = this.createTextNode(node.text);
                 header.appendChild(p);
             });
         } else {
-            //Hide ?
+            header.style.visibility = "hidden";
         }
     }
 
@@ -159,7 +168,16 @@ export default class Game {
                 if (validateConditions(element.conditions, this.state)) {
                     let node = this.createContentNode(element);
                     if (node) {
-                        contentUI.appendChild(node);
+                        node = contentUI.appendChild(node);
+
+                        /* if (element.type === "dialogue") {
+                              if (element.aling === "left") {
+                                  animateCSS(node, "bounceInLeft");
+                              } else {
+                                  animateCSS(node, "bounceInRight");
+                              }
+                          }*/
+
                     }
                 }
             });
@@ -174,7 +192,7 @@ export default class Game {
                     let bt = document.createElement("button");
                     bt.innerText = this.parsText(action.description);
                     bt.title = action.title;
-                    bt.onclick = (e) => {
+                    bt.onclick = e => {
                         if (action.statechange) {
                             this.applyStatChanges(action.statechange);
                         }
@@ -208,7 +226,7 @@ export default class Game {
                         break;
 
                     default:
-                        d("No such state opperation ${}")
+                        d(`No such state opperation ${change.type}`)
 
                 }
             })
@@ -224,6 +242,10 @@ export default class Game {
                 break;
             case "text": node = this.createTextNode(description.text);
                 break;
+            case "shout": node = this.createShoutNode(description.text);
+                break;
+            case "shout": node = this.createTextNode(description.text);
+                break;
             case "link": node = this.createLinkNode(description);
                 break;
             case "img": node = this.createImageNode(description);
@@ -236,11 +258,11 @@ export default class Game {
     createMonologNode(description) {
 
         let node = document.querySelector("#monologTemplate").content.cloneNode(true);
-        let portrait = node.querySelector(".npcPortrait");
+        let portrait = node.querySelector(".portrait");
         portrait.src = description.img;
 
         let name = node.querySelector(".actorName");
-        name.innerText = description.npcName;
+        name.innerText = this.parsText(description.name);
 
 
         let monolog = node.querySelector(".monologContent");
@@ -252,16 +274,25 @@ export default class Game {
 
     createDialogueNode(description) {
 
-        let node = document.querySelector("#dialogueTemplate").content.cloneNode(true);
-        let portrait = node.querySelector("#npcPortrait");
+        const node = document.querySelector("#dialogueTemplate").content.cloneNode(true);
+        const header = node.querySelector("header");
+
+        const aling = description.layout || "right";
+        header.classList.add(aling);
+
+        if (aling === "left") {
+            node.querySelector(".dialogue").classList.add("dialogueLeft");
+        }
+
+        const portrait = node.querySelector(".portrait");
         portrait.src = description.img;
 
-        let name = node.querySelector("#actorName");
-        name.innerText = description.name;
+        const name = node.querySelector("#actorName");
+        name.innerText = this.parsText(description.name);
 
 
-        let dioalouge = node.querySelector(".dialogue");
-        let p = this.createTextNode(description.text);
+        const dioalouge = node.querySelector(".dialogueContent");
+        const p = this.createTextNode(description.text);
         dioalouge.appendChild(p);
 
         return node;
@@ -286,6 +317,12 @@ export default class Game {
         let p = document.createElement("p");
         p.innerHTML = this.parsText(text);
         return p;
+    }
+
+    createShoutNode(text) {
+        let h = document.createElement("h1");
+        h.innerHTML = this.parsText(text);
+        return h;
     }
 
     parsText(text) {

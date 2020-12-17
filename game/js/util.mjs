@@ -28,21 +28,20 @@ const pickRandom = function (items) {
     return items[rnd(items.length)];
 }
 
-const animateCSS = function (element, animation, prefix = 'animate__') {
-    // We create a Promise and return it
-    return new Promise((resolve, reject) => {
+const animateCSS = function (element, animation, duration = 1, prefix = 'animate__') {
 
+    return new Promise((resolve, reject) => {
         const animationName = `${prefix}${animation}`;
-        const node = element;//document.querySelector(element);
-        node.style.setProperty('--animate-duration', '1s');
-        node.classList.add(`${prefix}animated`, animationName);
+
+        element.style.setProperty('--animate-duration', `${duration}s`);
+        element.classList.add(`${prefix}animated`, animationName);
 
         function handleAnimationEnd() {
-            node.classList.remove(`${prefix}animated`, animationName);
+            element.classList.remove(`${prefix}animated`, animationName);
             resolve('Animation ended');
         }
 
-        node.addEventListener('animationend', handleAnimationEnd, { once: true });
+        element.addEventListener('animationend', handleAnimationEnd, { once: true });
     });
 }
 

@@ -9,7 +9,7 @@
             "statechange": [],
             "clearSceneHistory": false,
             "headerImage": {
-                "src": "plane.png",
+                "src": "images/plane.png",
                 "alt": "To RAF fly"
             },
             "header": [
@@ -22,12 +22,8 @@
                 {
                     "type": "monolog",
                     "img": "images/battenbery.png",
-                    "npcName": "Sir Battenbery",
+                    "name": "Sir Battenbery",
                     "text": "De allierte mister for mange fly! Nå har Statsminister Churchill gitt oss i oppdrag å bruke statistikk og forskingingsmetode for å gjøre noe med det.<br/> Siden du er den eneste av oss som har studert statistikk og metode, så har du blitt valgt som leder av forskningsinstitusjonen."
-                },
-                {
-                    "type": "text",
-                    "text": "Velkommen {$playerName}"
                 }
             ],
             "actions": [
@@ -47,7 +43,7 @@
                     "type": "button",
                     "title": "stop",
                     "description": "På tide med en kopp te",
-                    "target": "next",
+                    "target": "TeTime",
                     "statechange": [
                         {
                             "type": "set",
@@ -77,6 +73,229 @@
                     }
                 ]
             }
+        },
+        "TeTime": {
+            "statechange": [],
+            "clearSceneHistory": false,
+            "headerImage": {
+                "src": "images/explosion.png",
+                "alt": "Fly som eksploderer"
+            },
+            "header": [],
+            "content": [
+                {
+                    "type": "dialogue",
+                    "layout": "left",
+                    "img": "images/player.png",
+                    "name": "{$playerName}",
+                    "text": "På tide med en kopp te!"
+                },
+                {
+                    "type": "dialogue",
+                    "layout": "right",
+                    "img": "images/battenbery.png",
+                    "name": "Sir Battenberry",
+                    "text": "Ah! En sterk kopp te får alltid ting til å føles litt bedre. Men det fortsatt 1943 og vi har mistet enda flere fly."
+                }
+            ],
+            "actions": [
+                {
+                    "type": "button",
+                    "title": "stop",
+                    "description": "Nå setter vi i gang med forskningen",
+                    "target": "forskning1",
+                    "statechange": []
+                },
+                {
+                    "type": "button",
+                    "title": "stop",
+                    "description": "Jeg trenger bare en sterk whisky først",
+                    "target": "WhiskeyTime",
+                    "statechange": [
+                        {
+                            "type": "incr",
+                            "target": "drunk",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "WhiskeyTime": {
+            "statechange": [],
+            "clearSceneHistory": false,
+            "headerImage": {
+                "src": "images/drinking.jpg",
+                "alt": "Fly som eksploderer"
+            },
+            "header": [],
+            "content": [
+                {
+                    "type": "dialogue",
+                    "layout": "left",
+                    "img": "images/player.png",
+                    "name": "{$playerName}",
+                    "text": "Åh, det gjorde seg. Whiskeyen brenner godt på vei ned!"
+                },
+                {
+                    "type": "dialogue",
+                    "layout": "right",
+                    "img": "images/battenbery.png",
+                    "name": "Sir Battenberry",
+                    "text": "Ja. Kremt..  Ikke ulikt flyene som skytes ut av himmelen på løpende bånd. "
+                }
+            ],
+            "actions": [
+                {
+                    "type": "button",
+                    "title": "stop",
+                    "description": "Vi setter i gang, for schwingende!",
+                    "target": "forskning1",
+                    "statechange": []
+                },
+                {
+                    "type": "button",
+                    "title": "stop",
+                    "description": "Nå tror jeg det er på tide med en kopp te",
+                    "target": "TeTime",
+                    "statechange": []
+                },
+                {
+                    "type": "button",
+                    "title": "stop",
+                    "description": "MER WHISKY",
+                    "target": "WhiskeyTime3",
+                    "statechange": [
+                        {
+                            "type": "incr",
+                            "target": "drunk",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "WhiskeyTime2": {
+            "statechange": [],
+            "clearSceneHistory": false,
+            "headerImage": {
+                "src": "images/drinking.jpg",
+                "alt": "Fly som eksploderer"
+            },
+            "header": [],
+            "content": [
+                {
+                    "type": "dialogue",
+                    "layout": "left",
+                    "img": "images/player.png",
+                    "name": "{$playerName}",
+                    "text": "Åh, det gjorde seg. Whiskeyen brenner godt på vei ned!"
+                },
+                {
+                    "type": "dialogue",
+                    "layout": "right",
+                    "img": "images/battenbery.png",
+                    "name": "Sir Battenberry",
+                    "text": "Ja. Kremt..  Ikke ulikt flyene som skytes ut av himmelen på løpende bånd. "
+                }
+            ],
+            "actions": [
+                {
+                    "type": "button",
+                    "title": "stop",
+                    "description": "Vi setter i gang, for schwingende!",
+                    "target": "forskning1",
+                    "statechange": []
+                },
+                {
+                    "type": "button",
+                    "title": "stop",
+                    "description": "Nå tror jeg det er på tide med en kopp te",
+                    "target": "TeTime",
+                    "statechange": []
+                },
+                {
+                    "type": "button",
+                    "title": "stop",
+                    "description": "MER WHISKY",
+                    "target": "WhiskeyTime3",
+                    "statechange": [
+                        {
+                            "type": "inc",
+                            "target": "drunk",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "WhiskeyTime3": {
+            "statechange": [],
+            "clearSceneHistory": false,
+            "headerImage": {
+                "src": "images/whiskey3.jpg",
+                "alt": "Fly som eksploderer"
+            },
+            "header": [],
+            "content": [
+                {
+                    "type": "dialogue",
+                    "layout": "left",
+                    "img": "images/player.png",
+                    "name": "{$playerName}",
+                    "text": "Er det to av deg?"
+                },
+                {
+                    "type": "dialogue",
+                    "layout": "right",
+                    "img": "images/battenbery.png",
+                    "name": "Sir Battenberry",
+                    "text": "Beklager å informere deg, men du er nå en hårsbredd unna å ikke være en del av Operations Research."
+                }
+            ],
+            "actions": [
+                {
+                    "type": "button",
+                    "title": "stop",
+                    "description": "Oh blimey! Jeg skal skjerpe meg. ",
+                    "target": "WhiskeyTimeEnd",
+                    "statechange": []
+                }
+            ]
+        },
+        "WhiskeyTimeEnd": {
+            "statechange": [],
+            "clearSceneHistory": false,
+            "headerImage": {
+                "src": "images/whiskey4.jpg",
+                "alt": "Fly som eksploderer"
+            },
+            "header": [],
+            "content": [
+                {
+                    "type": "monolog",
+                    "layout": "right",
+                    "img": "images/battenbery.png",
+                    "name": "Sir Battenberry"
+                },
+                {
+                    "type": "shout",
+                    "text": "Splendid!"
+                },
+                {
+                    "type": "text",
+                    "text": "Da setter vi i gang. Winston Churchill og kong George setter sin lit til deg. "
+                }
+            ],
+            "actions": [
+                {
+                    "type": "button",
+                    "title": "stop",
+                    "description": "Sett i gang med forskningen",
+                    "target": "forskning1",
+                    "statechange": []
+                }
+            ]
         }
     },
     "badges": [
@@ -89,7 +308,7 @@
             "conditions": [
                 {
                     "target": "teDrikking",
-                    "value": 2
+                    "value": 1
                 }
             ]
         },

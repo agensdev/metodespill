@@ -14,6 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Ranchers&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="css/base.css">
@@ -25,24 +26,22 @@
     <template id="monologTemplate">
         <div class="monolog">
             <header>
-                <img src="#" alt="npc" class="npcPortrait">
+                <img src="#" alt="npc" class="portrait">
                 <p class="actorName"></p>
             </header>
             <div class="monologContent">
             </div>
         </div>
-        </div>
     </template>
 
     <template id="dialogueTemplate">
-        <div>
+        <div class="dialogue">
             <header>
-                <img src="#" alt="npc" id="npcPortrait">
                 <p id="actorName"></p>
+                <img src="#" alt="npc" class="portrait">
             </header>
-            <div class="dialogue">
+            <div class="dialogueContent">
             </div>
-        </div>
         </div>
     </template>
 
@@ -61,17 +60,18 @@
     </template>
 
     <template id="sceneTemplate">
-        <div class="scene">
-            <header>
-                <div id="headerContent"></div>
-            </header>
-            <div class="content">
+        <div id="holder">
+            <div class="scene">
+                <header>
+                    <div id="headerContent"></div>
+                </header>
+                <div class="content">
+                </div>
+                <div class="actions">
+                </div>
             </div>
-            <div class="actions">
-            </div>
-        </div>
-        <div class="break"></div>
-        <div class="footer">
+            <div class="break"></div>
+            <div class="footer"></div>
         </div>
     </template>
 
