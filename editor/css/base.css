@@ -1,0 +1,18 @@
+.container{
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+}
+
+.row{
+    flex-direction: row;
+}
+
+.col{
+    flex-direction: column;;
+}
+
+.rounded {
+    border-radius: 18px;
+    padding: 20px; 
+}
