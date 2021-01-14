@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/line-awesome-font-awesome.min.css">
     <title>Editor</title>
 </head>
 
@@ -12,14 +13,15 @@
 
     <div class="container col" id="ide">
 
-        <div style="background-color: red;">
+    </div>
+
+
+    <template id="mainMenuTemplate">
+        <div id="mainMenu" style="background-color: red;">
             <input id="loadBT" type="file">
             <button id="createNewGameBT">Nytt spill</button>
         </div>
-        <div id="sections" style="background-color: green;">
-
-        </div>
-    </div>
+    </template>
 
 
     <template id="basicGameInfoTemplate">
@@ -31,123 +33,11 @@
         </div>
     </template>
 
-    <script src="js/localforage.min.js"></script>
+    <template id="">
 
-    <script>
+    </template>
 
-        /*
-        TODO: 
-        🔲 Reset av choose file når nytt spill starter
-        🔲 Forbedre Choose file slik at det ser mer proft ut. 
-        */
-
-
-        (async function () {
-            // If there there is a work in progress load it.
-            let workCopy = await getWorkCopy();
-            if (workCopy) {
-                initGame(JSON.parse(workCopy));
-            }
-        })();
-
-        document.getElementById("loadBT").onchange = async (e) => {
-            const file = e.target.files[0];
-            try {
-                const script = await readFileAsync(file);
-                initGame(script);
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        document.getElementById("createNewGameBT").onclick = (e) => {
-            initGame(null);
-        }
-
-        let game = null;
-        let dirty = false;
-
-        function initGame(gameSource) {
-
-            let container = document.querySelector("#sections");
-
-            if (game != null && dirty) {
-                /// TODO? Vil du virkelig lage et nytt spill uten å lagre?
-            } else {
-                container.innerHTML = ""
-            }
-
-            let section = document.querySelector("#basicGameInfoTemplate").content.cloneNode(true);
-            container.appendChild(section);
-
-            if (gameSource) {
-                game = gameSource
-            } else {
-                game = {
-                    "gameid": null,
-                    "gameName": null,
-                    "description": null,
-                    "initialState": null,
-                    "start": null,
-                    "scenes": [],
-                    "badges": []
-                };
-            }
-
-            inflateGameSource(game)
-        }
-
-        function inflateGameSource(gameSource) {
-
-            document.getElementById("gameNameTxt").value = gameSource.gameName || "";
-            document.getElementById("gameDescriptionTxt").value = gameSource.description || "";
-
-
-            let sceneSelector = document.getElementById("startScene");
-            Object.keys(gameSource.scenes).forEach(sceneName => {
-                let item = document.createElement("option");
-                item.value = sceneName;
-                item.text = sceneName;
-                sceneSelector.add(item)
-                if (gameSource.start && item.value === gameSource.start) {
-                    sceneSelector.selectedIndex = item.index;
-                }
-            })
-
-            sceneSelector.addEventListener("input", async e => {
-                gameSource.start = sceneSelector.selectedOptions[0].value;
-                dirty = true;
-                await saveWorkCopy(gameSource);
-            })
-        }
-
-        // UTILS 
-
-        async function saveWorkCopy(gameSource) {
-            await localforage.setItem("workCopy", JSON.stringify(gameSource));
-        }
-
-        async function getWorkCopy() {
-            return await localforage.getItem("workCopy");
-        }
-
-
-        async function readFileAsync(file) {
-            return new Promise((resolve, reject) => {
-                let reader = new FileReader();
-
-                reader.onload = () => {
-                    resolve(JSON.parse(reader.result));
-                };
-
-                reader.onerror = reject;
-                reader.readAsText(file);
-            })
-        }
-
-
-
-    </script>
+    <script src="js/app.mjs" type="module"></script>
 
 
 
