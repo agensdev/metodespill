@@ -16,3 +16,15 @@
     border-radius: 18px;
     padding: 20px; 
 }
+
+/* Fonts */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+body.use-roboto-all {
+    font-family: "Roboto", sans-serif;
+}
+body.with-extra-letter-spacing-on-side-navs .sidebar *,
+body.with-extra-letter-spacing-on-side-navs .on-this-page-nav * {
+    letter-spacing: 0.3px;
+}

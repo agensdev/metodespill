@@ -1,4 +1,3 @@
-
 async function saveToLocalCache(key, item) {
     await localforage.setItem(key, JSON.stringify(item));
 }

@@ -5,41 +5,179 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/line-awesome-font-awesome.min.css">
+    <link rel="stylesheet" href="css/line-awesome.min.css">
+    <link href="css/halfmoon-variables.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
     <title>Editor</title>
 </head>
 
-<body>
+<body class="with-custom-webkit-scrollbars with-custom-css-scrollbars dark-mode">
 
-    <div class="container col" id="ide">
+    <!-- Page wrapper with navbar, sidebar, navbar fixed bottom, and sticky alerts (toasts) -->
+    <div class="page-wrapper with-navbar with-sidebar with-navbar-fixed-bottom" data-sidebar-type="full-height">
+        <!-- Sticky alerts (toasts), empty container -->
+        <div class="sticky-alerts"></div>
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="navbar-content">
+                <button id="toggle-sidebar-btn" class="btn btn-action" type="button" onclick="halfmoon.toggleSidebar()">
+                    <i class="las la-bars"></i>
+                </button>
+            </div>
+            <a href="#" class="navbar-brand ml-10 ml-sm-20">
+                <span class="d-none d-sm-flex">🥼🕹 Metodespill</span>
+            </a>
+            <div class="navbar-content ml-auto">
+                <button class="btn btn-action mr-5" type="button" onclick="halfmoon.toggleDarkMode()">
+                    <i class="las la-moon" aria-hidden="true"></i>
+                    <span class="sr-only">Toggle dark mode</span>
+                </button>
+                <a href="#" class="btn btn-primary" role="button"><i class="las la-play-circle"></i></a>
+            </div>
+        </nav>
+        <!-- Sidebar overlay -->
+        <div class="sidebar-overlay" onclick="halfmoon.toggleSidebar()"></div>
+        <!-- Sidebar -->
+        <div class="sidebar" id="mainMenu">
+            <h5 class="sidebar-title">File</h5>
+            <a href="#" class="sidebar-link sidebar-link-with-icon" id="openGameBt">
+                <span class="sidebar-icon">
+                    <i class="lar la-folder-open"></i>
+                </span>
+                Open Game
+            </a>
+            <a href="#" class="sidebar-link sidebar-link-with-icon" id="createNewGameBt">
+                <span class="sidebar-icon">
+                    <i class="las la-file-alt"></i>
+                </span>
+                New Game
+            </a>
+            <a href="#" class="sidebar-link sidebar-link-with-icon" id="saveGameBt">
+                <span class="sidebar-icon">
+                    <i class="lar la-save"></i>
+                </span>
+                Save Game
+            </a>
+            <input type="file" id="fileExplorer" hidden>
+            <h5 class="sidebar-title">Components</h5>
+            <a href="#" class="sidebar-link sidebar-link-with-icon">
+                <span class="sidebar-icon">
+                    <i class="las la-puzzle-piece"></i>
+                </span>
+                New Section
+            </a>
+            <a href="#" class="sidebar-link sidebar-link-with-icon">
+                <span class="sidebar-icon">
+                    <i class="las la-certificate"></i>
+                </span>
+                New Badge
+            </a>
 
+            <div class="sidebar-content">
+                <div class="custom-switch d-inline-block">
+                    <input type="checkbox" id="autoSaveSwitch" value="">
+                    <label for="autoSaveSwitch">Auto Save</label>
+                </div>
+            </div>
+
+        </div>
+        <!-- Content wrapper -->
+        <div class="content-wrapper">
+            <div class="container-fluid" id="sections">
+
+            </div>
+        </div>
+        <!-- Navbar fixed bottom -->
+        <nav class="navbar navbar-fixed-bottom">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="las la-question-circle"></i>
+                        &nbsp;Help
+                    </a>
+                </li>
+            </ul>
+
+        </nav>
+    </div>
+
+    <div class="modal" id="modal-newState" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <button class="close" data-dismiss="modal" type="button" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title">New state item </h5>
+                <div>
+                    <input id="newStateItemKey" type="text" class="form-control alt-dm" placeholder="state item id">
+                    <input id="newStateItemValue" type="text" class="form-control alt-dm" placeholder="state value">
+                </div>
+                <div class="text-right mt-20">
+                    <!-- text-right = text-align: right, mt-20 = margin-top: 2rem (20px) -->
+                    <button id="cancelNewStateItem" class="btn mr-5" type="button">Cancel</button>
+                    <button id="saveNewStateItemBt" class="btn btn-primary" type="button">Save</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 
-    <template id="mainMenuTemplate">
-        <div id="mainMenu" style="background-color: red;">
-            <input id="loadBT" type="file">
-            <button id="createNewGameBT">Nytt spill</button>
-        </div>
-    </template>
-
-
     <template id="basicGameInfoTemplate">
-        <div class="container col rounded">
-            <div><label for='gameNameTxt'>Spill navn</label><input type='text' id='gameNameTxt'></div>
-            <div><label for='gameDescriptionTxt'>Beskrivelse</label><input type='text' id='gameDescriptionTxt'></div>
-            <div><button id="initialStateBT">Start Verdier</button></div>
-            <div><label for='startScene'>Start sene</label><select id='startScene'></select></div>
+        <div class="card">
+            <h2 class="card-title">
+                Base game info
+            </h2>
+
+            <details class="collapse-panel" open>
+                <summary class="collapse-header">
+                    Details
+                </summary>
+                <div class="collapse-content">
+                    <div class="form-group">
+                        <label for='gameNameTxt'>Game name</label>
+                        <input type='text' id='gameNameTxt' class="form-control" placeholder="Game name">
+                    </div>
+                    <div class="form-group">
+                        <label for='gameDescriptionTxt'>Description</label>
+                        <textarea id='gameDescriptionTxt' class="form-control"
+                            placeholder="Short description of game purpos etc"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for='startScene'>Start scene</label>
+                        <select id='startScene' class="form-control">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for='gameDescriptionTxt'>Initial game states</label>
+                        <table class="table table-striped table-hover" id="initialGameStates">
+                            <thead>
+                                <tr>
+                                    <th>State id</th>
+                                    <th class="text-right">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button id="addNewInitialStateBt" class="btn btn-primary btn-sm" type="button" data-toggle="tooltip"
+                        data-title="Add new state value" data-placement="right">&plus;</button>
+                </div>
+            </details>
         </div>
     </template>
 
-    <template id="">
-
+    <template id="stateDisplayTemplat">
+        <tr>
+            <td></td>
+            <td class="text-right"></td>
+        </tr>
     </template>
 
-    <script src="js/app.mjs" type="module"></script>
 
-
+    <script src="./js/app.mjs" type="module"></script>
+    <script src="./js/halfmoon.min.js"></script>
+    <script src="./js/localforage.min.js"></script>
 
 </body>
 
