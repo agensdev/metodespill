@@ -8,12 +8,19 @@ export default class MainMenuView {
         this.openExplorerBt = document.getElementById("openGameBt")
         this.newGameBt = document.getElementById("createNewGameBt")
         this.saveGameBt = document.getElementById("saveGameBt")
+        this.exportGameBt = document.getElementById("exportGameBt")
         this.autoSaveSwitch = document.getElementById("autoSaveSwitch")
         this.delegates = delegates
 
         this.autoSaveSwitch.checked = autoSaveState || false;
         this.autoSaveSwitch.onchange = async (e) => {
             await this.delegates.onAutoSaveTogle(this.autoSaveSwitch.checked)
+        }
+
+
+        this.exportGameBt.onclick = () => {
+            ///TODO. Export game to Firebase. 
+            this.delegates.onExportComplete();
         }
 
         this.saveGameBt.onclick = () => {

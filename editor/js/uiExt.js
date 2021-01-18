@@ -17,6 +17,19 @@ class HTMLUtilityTools {
         return document.querySelector(`#${templateId}`).content.cloneNode(true);
     }
 
+    static setAttribute(attribute, value, targets) {
+        targets.forEach(item => {
+            item.setAttribute(attribute, value)
+        });
+    }
+
+    static removeAttribute(attribute, targets) {
+        targets.forEach(item => {
+            item.removeAttribute(attribute)
+        });
+    }
+
+
 }
 
 export { HTMLSelectorTools, HTMLUtilityTools }

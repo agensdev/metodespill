@@ -4,6 +4,7 @@ import { HTMLUtilityTools } from './uiExt.js'
 
 import MainMenuView from './views/mainMenuView.js'
 import BaseGameInfoView from './views/baseGameInfoView.js'
+import BadgesView from './views/badgesView.js'
 
 class Application {
     constructor(autoSave, script) {
@@ -61,6 +62,11 @@ class Application {
             return await this.addNewState();
         }
 
+
+        delegate.onExportComplete = () => {
+            this.alert("Export complete", "Game is know awailable to play", "alert-success")
+        }
+
         return delegate;
     }
 
@@ -93,6 +99,7 @@ class Application {
 
     renderGameSource(source) {
         const baseInfo = new BaseGameInfoView(source, this.sections, this.delegates);
+        const badges = new BadgesView(source, this.sections, this.delegates);
 
     }
 
@@ -106,6 +113,7 @@ class Application {
             let cancelBt = document.querySelector("#cancelNewStateItem");
             let stateKey = document.querySelector("#newStateItemKey");
             let stateValue = document.querySelector("#newStateItemValue");
+            let stateType = document.querySelector("#newStateItemType");
 
             stateKey.value = "";
             stateValue.value = "";
@@ -116,7 +124,7 @@ class Application {
             }
             addBt.onclick = () => {
                 ///TODO: Validering av state verdier 
-                resolve({ key: stateKey.value, value: stateValue.value });
+                resolve({ key: stateKey.value, value: stateValue.value, type: stateType.value });
                 halfmoon.toggleModal('modal-newState');
             }
 
