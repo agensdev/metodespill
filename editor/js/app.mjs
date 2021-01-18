@@ -68,8 +68,9 @@ class Application {
         }
 
         delegate.onNewSection = () => {
-            let section = new SectionView({}, this.sections, this.delegates);
-            this.container.appendChild(section);
+            let title = "NewSection"
+            this.gameSource.scenes[title] = { statechange: [], clearSceneHistory: false, headerImage: null, header: [], content: [], actions: [], auxiliaryContent: {} }
+            new SectionView(title, this.gameSource, this.sections, this.delegates);
         }
 
         return delegate;
@@ -111,7 +112,7 @@ class Application {
                 new SectionView(title, source, this.sections, this.delegates)
             });
         }
-        //new BadgesView(source, this.sections, this.delegates);
+        new BadgesView(source, this.sections, this.delegates);
     }
 
 

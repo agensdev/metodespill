@@ -24,13 +24,21 @@ export default class SectionView {
         this.sectionID = window.crypto.getRandomValues(new Uint8Array(10)).join("-");
 
         let template = HTMLUtilityTools.createInstanceOfTemplate("sectionViewTemplate", this.sectionID);
-        this.view = this.container.appendChild(template);
+        const anchor = this.container.firstElementChild.nextSibling || this.container.firstElementChild;
+        this.view = this.container.insertBefore(template, anchor)
+        //this.view = this.container.appendChild(template);
         this.view = document.getElementById(this.sectionID); ///??? Uklart hvorfor jeg må gå via  this.view = document.getElementById(this.sectionID);
 
         this.setupTitleEdit(this.source)
         this.setupDisplaySource(this.title, this.source);
 
 
+        let deleteBT = this.view.querySelector("button[data-role=deleteSection]");
+        deleteBT.onclick = async () => {
+            delete this.source.scenes[this.title];
+            this.view.parentNode.removeChild(this.view);
+            await this.delegates.onChange();
+        }
 
         //this.clearHistorySwitch = document.getElementById("clearSceneHistorySwitch");
 
