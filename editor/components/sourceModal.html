@@ -1,0 +1,15 @@
+<template id="sourceEditModal">
+    <div class="modal modal-full ie-scroll-fix" id="source-view" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content w-600">
+                <h5 class="modal-title">Source view </h5>
+                <p id="sourceCode" contenteditable="true" class="d-block"></p>
+                <div class="text-right mt-20">
+                    <!-- text-right = text-align: right, mt-20 = margin-top: 2rem (20px) -->
+                    <button id="cancelSourceCodeEdit" class="btn mr-5" type="button">Cancel</button>
+                    <button id="saveSourcecodeChange" class="btn btn-primary" type="button">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

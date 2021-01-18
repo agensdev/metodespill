@@ -10,6 +10,7 @@ export default class MainMenuView {
         this.saveGameBt = document.getElementById("saveGameBt")
         this.exportGameBt = document.getElementById("exportGameBt")
         this.autoSaveSwitch = document.getElementById("autoSaveSwitch")
+        this.newSectionBT = document.getElementById("newSectionBT");
         this.delegates = delegates
 
         this.autoSaveSwitch.checked = autoSaveState || false;
@@ -35,6 +36,10 @@ export default class MainMenuView {
             this.delegates.onNewGame();
         }
 
+        this.newSectionBT.onclick = () => {
+            this.delegates.onNewSection();
+        }
+
         this.fileExplorer.onchange = async (e) => {
             const file = e.target.files[0];
             try {
@@ -44,8 +49,9 @@ export default class MainMenuView {
                 console.error(error);
                 this.delegates.onError("Could not load game source file");
             }
-
         }
+
+
 
 
     }

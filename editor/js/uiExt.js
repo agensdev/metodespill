@@ -23,8 +23,12 @@ class HTMLUtilityTools {
         document.body.appendChild(template);
     }
 
-    static createInstanceOfTemplate(templateId) {
-        return document.querySelector(`#${templateId}`).content.cloneNode(true);
+    static createInstanceOfTemplate(templateId, optionalUniqueId) {
+        let template = document.querySelector(`#${templateId}`).content;
+        if (optionalUniqueId) {
+            template.firstElementChild.id = optionalUniqueId;
+        }
+        return template.cloneNode(true);
     }
 
     static setAttribute(attribute, value, targets) {
@@ -39,7 +43,21 @@ class HTMLUtilityTools {
         });
     }
 
+    static hide(targets) {
+        targets.forEach(item => {
+            item.classList.add("d-none");
+        })
+    }
+
+
+    static show(targets) {
+        targets.forEach(item => {
+            item.classList.remove("d-none");
+        })
+    }
+
 
 }
+
 
 export { HTMLSelectorTools, HTMLUtilityTools }

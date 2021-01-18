@@ -5,6 +5,7 @@ import { HTMLUtilityTools } from './uiExt.js'
 import MainMenuView from './views/mainMenuView.js'
 import BaseGameInfoView from './views/baseGameInfoView.js'
 import BadgesView from './views/badgesView.js'
+import SectionView from './views/sectionView.js'
 
 class Application {
     constructor(autoSave, script) {
@@ -62,9 +63,13 @@ class Application {
             return await this.addNewState();
         }
 
-
         delegate.onExportComplete = () => {
             this.alert("Export complete", "Game is know awailable to play", "alert-success")
+        }
+
+        delegate.onNewSection = () => {
+            let section = new SectionView({}, this.sections, this.delegates);
+            this.container.appendChild(section);
         }
 
         return delegate;
@@ -98,9 +103,15 @@ class Application {
     }
 
     renderGameSource(source) {
-        const baseInfo = new BaseGameInfoView(source, this.sections, this.delegates);
-        const badges = new BadgesView(source, this.sections, this.delegates);
+        this.sections.innerHTML = ""; ///TODO Gjør dette på en bedre måte?
 
+        new BaseGameInfoView(source, this.sections, this.delegates);
+        if (source.scenes) {
+            Object.keys(source.scenes).forEach(title => {
+                new SectionView(title, source, this.sections, this.delegates)
+            });
+        }
+        //new BadgesView(source, this.sections, this.delegates);
     }
 
 
@@ -160,10 +171,15 @@ window.onload = async () => {
     const autoSave = await getFromLocalCache("autoSave");
     const script = await getFromLocalCache("gameSource");
 
-    await HTMLUtilityTools.loadAndEmbedTemplate("components/baseGameInfo.html");
-    await HTMLUtilityTools.loadAndEmbedTemplate("components/badgeSection.html");
-    await HTMLUtilityTools.loadAndEmbedTemplate("components/stateButtons.html");
-    await HTMLUtilityTools.loadAndEmbedTemplate("components/sectionView.html");
+    try {
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/baseGameInfo.html");
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/badgeSection.html");
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/stateButtons.html");
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/sectionView.html");
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/sourceModal.html");
+    } catch (error) {
+        console.error(error);
+    }
 
     window.app = new Application(autoSave, script);
 }

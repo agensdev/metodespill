@@ -3,8 +3,7 @@ import { HTMLUtilityTools, HTMLSelectorTools } from '../uiExt.js'
 export default class BaseGameInfoView {
     constructor(source, container, delegates) {
         this.view = HTMLUtilityTools.createInstanceOfTemplate("basicGameInfoTemplate");
-        container.appendChild(this.view);
-
+        this.view = container.appendChild(this.view);
         this.delegates = delegates
         this.gameNameView = document.getElementById("gameNameTxt");
         this.gameDescription = document.getElementById("gameDescriptionTxt");
