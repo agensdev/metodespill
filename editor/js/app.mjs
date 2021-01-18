@@ -160,5 +160,10 @@ window.onload = async () => {
     const autoSave = await getFromLocalCache("autoSave");
     const script = await getFromLocalCache("gameSource");
 
+    await HTMLUtilityTools.loadAndEmbedTemplate("components/baseGameInfo.html");
+    await HTMLUtilityTools.loadAndEmbedTemplate("components/badgeSection.html");
+    await HTMLUtilityTools.loadAndEmbedTemplate("components/stateButtons.html");
+    await HTMLUtilityTools.loadAndEmbedTemplate("components/sectionView.html");
+
     window.app = new Application(autoSave, script);
 }

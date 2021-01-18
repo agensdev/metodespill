@@ -13,6 +13,16 @@ class HTMLSelectorTools {
 
 class HTMLUtilityTools {
 
+
+    static async loadAndEmbedTemplate(templateURL) {
+        let source = await fetch(templateURL);
+        source = await source.text();
+        let container = document.createElement("div");
+        container.innerHTML = source
+        let template = container.firstElementChild;
+        document.body.appendChild(template);
+    }
+
     static createInstanceOfTemplate(templateId) {
         return document.querySelector(`#${templateId}`).content.cloneNode(true);
     }

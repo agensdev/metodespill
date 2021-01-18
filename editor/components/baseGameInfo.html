@@ -1,0 +1,45 @@
+<template id="basicGameInfoTemplate">
+    <div class="card">
+        <h2 class="card-title">
+            Base game info
+        </h2>
+
+        <details class="collapse-panel" open>
+            <summary class="collapse-header">
+                Details
+            </summary>
+            <div class="collapse-content">
+                <div class="form-group">
+                    <label for='gameNameTxt'>Game name</label>
+                    <input type='text' id='gameNameTxt' class="form-control" placeholder="Game name">
+                </div>
+                <div class="form-group">
+                    <label for='gameDescriptionTxt'>Description</label>
+                    <textarea id='gameDescriptionTxt' class="form-control"
+                        placeholder="Short description of game purpos etc"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for='startScene'>Start scene</label>
+                    <select id='startScene' class="form-control">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for='gameDescriptionTxt'>Initial game states</label>
+                    <table class="table" id="initialGameStates">
+                        <thead>
+                            <tr>
+                                <th>State id</th>
+                                <th>Value</th>
+                                <th class="text-right">&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <button id="addNewInitialStateBt" class="btn btn-primary btn-sm" type="button" data-toggle="tooltip"
+                    data-title="Add new state value" data-placement="right">&plus;</button>
+            </div>
+        </details>
+    </div>
+</template>
