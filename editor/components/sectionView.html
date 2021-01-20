@@ -15,7 +15,12 @@
                 Header
             </summary>
             <div class="collapse-content">
-                &nbsp;
+                <input type="text" data-role="header-text" class="form-control" placeholder="Header text" />
+                <div class="custom-file">
+                    <input type="file" data-role="header-image" id="header-image-selector" accept="image/*">
+                    <label for="header-image-selector">Choose a background image</label>
+                </div>
+                <img src="" alt="image for header" class="thumbnail d-none" data-role="image-display">
             </div>
         </details>
 
@@ -24,7 +29,16 @@
                 Content
             </summary>
             <div class="collapse-content">
-                &nbsp;
+                <textarea data-role="sceneContent" class="form-control"></textarea>
+                <div class="btn-group" role="group" aria-label="Add content">
+                    <button class="btn" data-role="monolog">Monolog</button>
+                    <button class="btn" data-role="dialogue">Dialogue</button>
+                    <button class="btn" data-role="text">Text</button>
+                    <button class="btn" data-role="shout">Shout</button>
+                    <button class="btn" data-role="link">Link</button>
+                    <button class="btn" data-role="image">Image</button>
+                    <button class="btn" data-role="video">Video</button>
+                </div>
             </div>
         </details>
 
@@ -33,7 +47,10 @@
                 Actions
             </summary>
             <div class="collapse-content">
-                &nbsp;
+                <textarea data-role="sceneActions" class="form-control"></textarea>
+                <div class="btn-group" role="group" aria-label="Add Action">
+                    <button class="btn" data-role="action">Action</button>
+                </div>
             </div>
         </details>
 
@@ -42,7 +59,7 @@
                 State
             </summary>
             <div class="collapse-content">
-                &nbsp;
+                <textarea data-role="sceneStateChanges" class="form-control"></textarea>
             </div>
         </details>
 
@@ -51,7 +68,7 @@
                 Extended info
             </summary>
             <div class="collapse-content">
-                &nbsp;
+                <textarea data-role="sceneExtended" class="form-control"></textarea>
             </div>
         </details>
 

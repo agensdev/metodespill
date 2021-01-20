@@ -16,6 +16,8 @@ class Application {
         this.autoSave = autoSave
         this.mainMenu = new MainMenuView(document.getElementById("mainMenu"), this.delegates, this.autoSave);
 
+        this.updateListeners = [];
+
         if (script) {
             this.loadScript(script)
         }
@@ -33,7 +35,7 @@ class Application {
                 "description": null,
                 "initialState": null,
                 "start": null,
-                "scenes": [],
+                "scenes": {},
                 "badges": []
             })
         };
@@ -47,6 +49,7 @@ class Application {
 
         delegate.onChange = async () => {
             await this.autoSaveSource()
+            this.updateListeners.forEach(listener => listener.update());
         }
 
         delegate.onSaveGame = () => {
@@ -67,9 +70,10 @@ class Application {
             this.alert("Export complete", "Game is know awailable to play", "alert-success")
         }
 
-        delegate.onNewSection = () => {
+        delegate.onNewSection = async () => {
             let title = "NewSection"
-            this.gameSource.scenes[title] = { statechange: [], clearSceneHistory: false, headerImage: null, header: [], content: [], actions: [], auxiliaryContent: {} }
+            this.gameSourceShadow.scenes[title] = { statechange: [], clearSceneHistory: false, headerImage: null, header: [], content: [], actions: [], auxiliaryContent: {} }
+            await this.autoSaveSource()
             new SectionView(title, this.gameSource, this.sections, this.delegates);
         }
 
@@ -78,7 +82,7 @@ class Application {
 
     async onGameSourceChange(target, key, value) {
         target[key] = value;
-        await autoSaveSource();
+        await this.autoSaveSource();
         return true;
     }
 
@@ -106,7 +110,7 @@ class Application {
     renderGameSource(source) {
         this.sections.innerHTML = ""; ///TODO Gjør dette på en bedre måte?
 
-        new BaseGameInfoView(source, this.sections, this.delegates);
+        this.updateListeners.push(new BaseGameInfoView(source, this.sections, this.delegates));
         if (source.scenes) {
             Object.keys(source.scenes).forEach(title => {
                 new SectionView(title, source, this.sections, this.delegates)

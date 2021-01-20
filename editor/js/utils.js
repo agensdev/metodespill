@@ -1,10 +1,18 @@
-async function saveToLocalCache(key, item) {
-    await localforage.setItem(key, JSON.stringify(item));
+async function saveToLocalCache(key, item, binary) {
+    binary = binary || false;
+    let content = binary ? item : JSON.stringify(item);
+    await localforage.setItem(key, content);
 }
 
-async function getFromLocalCache(key) {
+async function getFromLocalCache(key, binary) {
+    binary = binary || false;
     let item = await localforage.getItem(key);
-    return JSON.parse(item)
+    item = binary ? item : JSON.parse(item);
+    return item;
+}
+
+async function clearCache() {
+    await localforage.clear()
 }
 
 async function readLocalTextFile(file) {
@@ -18,4 +26,15 @@ async function readLocalTextFile(file) {
     })
 }
 
-export { saveToLocalCache, getFromLocalCache, readLocalTextFile }
+async function readLocalBinaryFile(file) {
+    return new Promise((resolve, reject) => {
+        let reader = new FileReader();
+        reader.onload = () => {
+            resolve(reader.result);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file)
+    })
+}
+
+export { saveToLocalCache, getFromLocalCache, readLocalTextFile, readLocalBinaryFile, clearCache }

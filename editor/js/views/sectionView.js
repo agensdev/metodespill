@@ -1,7 +1,5 @@
 import { HTMLUtilityTools, HTMLSelectorTools } from '../uiExt.js'
-
-
-
+import { readLocalBinaryFile, saveToLocalCache, getFromLocalCache } from '../utils.js'
 
 export default class SectionView {
 
@@ -29,9 +27,12 @@ export default class SectionView {
         //this.view = this.container.appendChild(template);
         this.view = document.getElementById(this.sectionID); ///??? Uklart hvorfor jeg må gå via  this.view = document.getElementById(this.sectionID);
 
-        this.setupTitleEdit(this.source)
+        this.setupTitleEdit(this.source);
         this.setupDisplaySource(this.title, this.source);
-
+        this.setupHeaderEdit();
+        this.setupContentEdit();
+        this.setupActionsEdit();
+        this.setupStateEdit();
 
         let deleteBT = this.view.querySelector("button[data-role=deleteSection]");
         deleteBT.onclick = async () => {
@@ -40,12 +41,264 @@ export default class SectionView {
             await this.delegates.onChange();
         }
 
-        //this.clearHistorySwitch = document.getElementById("clearSceneHistorySwitch");
+    }
 
-        /*
-        this.headerImage = document.getElementById("headerImagePicker");
-        this.headerType = "txt";
-        this.headerText = document.getElementById("") */
+    setupStateEdit() {
+        let scene = this.source.scenes[this.title]
+        const contentView = this.view.querySelector("textarea[data-role=sceneActions]");
+
+        let addActionbt = this.view.querySelector("button[data-role=state]");
+
+        const structures = {
+            state: {
+                "type": "inc",
+                "target": "drunk",
+                "value": 1
+            }
+        };
+
+
+
+        [addActionbt].forEach(bt => {
+            bt.onclick = async e => {
+                try {
+                    let currentScene = contentView.value ? JSON.parse(contentView.value) : [];
+                    let key = e.currentTarget.getAttribute("data-role");
+                    let newStruct = { ...structures[key] }
+                    currentScene.push(newStruct);
+                    contentView.value = JSON.stringify(currentScene, null, 3);
+                    scene.statechange = [...currentScene]
+                    await this.delegates.onChange();
+                } catch (error) {
+                    console.log(error);
+                    ///TODO: Bedre tilbake melding om hva feilen er
+                    this.delegates.onError("Actions contains errors that must be fixed before adding new content");
+                }
+            }
+        });
+
+
+        if (scene.statechange && scene.statechange.length > 0) {
+            contentView.value = JSON.stringify(scene.statechange, null, 3);
+        } else {
+            contentView.value = ""
+        }
+
+        contentView.onchange = async e => {
+            try {
+                scene.statechange = JSON.parse(contentView.value)
+                await this.delegates.onChange();
+            } catch (error) {
+                console.log(error);
+                ///TODO: Bedre tilbake melding om hva feilen er
+                this.delegates.onError("Actions contains errors that must be fixed before continuing");
+            }
+        }
+
+    }
+
+
+    setupActionsEdit() {
+        let scene = this.source.scenes[this.title]
+        const contentView = this.view.querySelector("textarea[data-role=sceneActions]");
+
+        let addActionbt = this.view.querySelector("button[data-role=action]");
+
+        const structures = {
+            action: {
+                "type": "button",
+                "title": "xxxx",
+                "description": "xxx xxxxxx xxxxx xxxxx xxx",
+                "target": "xxxxxxxxxx",
+                "statechange": []
+            }
+        };
+
+        [addActionbt].forEach(bt => {
+            bt.onclick = async e => {
+                try {
+                    let currentScene = contentView.value ? JSON.parse(contentView.value) : [];
+                    let key = e.currentTarget.getAttribute("data-role");
+                    let newStruct = { ...structures[key] }
+                    currentScene.push(newStruct);
+                    contentView.value = JSON.stringify(currentScene, null, 3);
+                    scene.actions = [...currentScene]
+                    await this.delegates.onChange();
+                } catch (error) {
+                    console.log(error);
+                    ///TODO: Bedre tilbake melding om hva feilen er
+                    this.delegates.onError("Actions contains errors that must be fixed before adding new content");
+                }
+            }
+        });
+
+
+        if (scene.actions && scene.actions.length > 0) {
+            contentView.value = JSON.stringify(scene.actions, null, 3);
+        } else {
+            contentView.value = ""
+        }
+
+        contentView.onchange = async e => {
+            try {
+                scene.actions = JSON.parse(contentView.value)
+                await this.delegates.onChange();
+            } catch (error) {
+                console.log(error);
+                ///TODO: Bedre tilbake melding om hva feilen er
+                this.delegates.onError("Actions contains errors that must be fixed before continuing");
+            }
+        }
+
+    }
+
+
+    setupContentEdit() {
+        let scene = this.source.scenes[this.title]
+        const contentView = this.view.querySelector("textarea[data-role=sceneContent]");
+
+        let addMonologbt = this.view.querySelector("button[data-role=monolog]");
+        let addDialoguebt = this.view.querySelector("button[data-role=dialogue]");
+        let addTextbt = this.view.querySelector("button[data-role=text]");
+        let addShoutbt = this.view.querySelector("button[data-role=shout]");
+        let addLinkbt = this.view.querySelector("button[data-role=link]");
+        let addImagebt = this.view.querySelector("button[data-role=image]");
+        let addVideobt = this.view.querySelector("button[data-role=video]");
+
+        const structures = {
+            monolog: {
+                type: "monolog",
+                layout: "right",
+                img: "images/xxxxxx.xxx",
+                name: "xxxxx xxxxx"
+            },
+            dialogue: {
+                "type": "dialogue",
+                "layout": "left x||x right",
+                "img": "images/xxxxx.xxx",
+                "name": "xxxxxx xxxx",
+                "text": "xxxxxxx xxxxx xxxx xxxxx"
+            },
+            text: {
+                "type": "text",
+                "text": "xxxxxxx xxxxx xxxx xxxxx"
+            },
+            shout: {
+                "type": "shout",
+                "text": "xxxxxxx xxxxx xxxx xxxxx"
+            },
+            link: {
+                "type": "link",
+                "url": "https://xxxxxxx.xx/xxxx",
+                "text": "xxxxxxx xxxxx xxxx xxxxx"
+            },
+            image: {
+                "type": "img",
+                "src": "images/xxxxxx.xxx",
+                "alt": "xxxxxxx xxxxx xxxx xxxxx"
+            },
+            video: {
+                "type": "video",
+                "src": "https://xxxxxxx.xx/xxxx",
+                "alt": "xxxxxxx xxxxx xxxx xxxxx"
+            }
+        };
+
+        [addMonologbt, addDialoguebt, addTextbt, addShoutbt, addLinkbt, addImagebt, addVideobt].forEach(bt => {
+            bt.onclick = async e => {
+                try {
+                    let currentScene = contentView.value ? JSON.parse(contentView.value) : [];
+                    let key = e.currentTarget.getAttribute("data-role");
+                    let newStruct = { ...structures[key] }
+                    currentScene.push(newStruct);
+                    contentView.value = JSON.stringify(currentScene, null, 3);
+                    scene.content = [...currentScene]
+                    await this.delegates.onChange();
+                } catch (error) {
+                    console.log(error);
+                    ///TODO: Bedre tilbake melding om hva feilen er
+                    this.delegates.onError("Scene contains errors that must be fixed before adding new content");
+                }
+            }
+        });
+
+
+        if (scene.content && scene.content.length > 0) {
+            contentView.value = JSON.stringify(scene.content, null, 3);
+        } else {
+            contentView.value = ""
+        }
+
+        contentView.onchange = async e => {
+            try {
+                scene.content = JSON.parse(contentView.value)
+                await this.delegates.onChange();
+            } catch (error) {
+                console.log(error);
+                ///TODO: Bedre tilbake melding om hva feilen er
+                this.delegates.onError("Scene contains errors that must be fixed before continuing");
+            }
+        }
+
+    }
+
+    setupHeaderEdit() {
+
+        let scene = this.source.scenes[this.title]
+        const imagePicker = this.view.querySelector("#header-image-selector");
+        const description = this.view.querySelector("input[data-role=header-text]");
+        const imageDisplay = this.view.querySelector("img[data-role=image-display]");
+
+        description.onchange = async (e) => {
+            scene.header = [{
+                "type": "text",
+                "text": description.value
+            }]
+            await this.delegates.onChange();
+        }
+
+        if (scene.header && scene.header.length > 0) {
+            description.value = scene.header[0].text;
+        }
+
+        ///TODO: Funksjon for å ta bort header bilde dersom man ikke vil ha det lengre
+
+        imagePicker.onchange = async (e) => {
+            const file = e.target.files[0];
+            try {
+                const image = await readLocalBinaryFile(file);
+                imageDisplay.src = URL.createObjectURL(file);
+                imageDisplay.classList.remove("d-none");
+                saveToLocalCache(file.name, image, true);
+
+                scene.headerImage = scene.headerImage || {};
+                scene.headerImage.src = `images/${file.name}`
+                scene.headerImage.alt = "decorative header" ///TODO: UI for å sette alt tekst.
+
+                await this.delegates.onChange();
+            } catch (error) {
+                console.error(error);
+                this.delegates.onError("Could not load image");
+            }
+        }
+
+        try {
+            if (scene.headerImage && scene.headerImage.src) {
+                let key = this.source.scenes[this.title].headerImage.src.replaceAll("images/", "");
+                console.log(key)
+                getFromLocalCache(key, true).then(image => {
+                    if (image) {
+                        imageDisplay.classList.remove("d-none");
+                        imageDisplay.setAttribute("src", image)
+                    }
+                });
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
+
+
     }
 
     setupDisplaySource(title, source) {

@@ -250,6 +250,8 @@ export default class Game {
                 break;
             case "img": node = this.createImageNode(description);
                 break;
+            case "video": node = this.createVideoNode(description);
+                break;
             default: d(`Typen ${description.type} is not a recognized type`);
         }
         return node;
@@ -298,6 +300,14 @@ export default class Game {
         return node;
     }
 
+    createVideoNode(description) {
+        let img = document.createElement("img");
+        img.src = description.src;
+        img.alt = description.alt;
+        img.innerText = description.alt;
+        return img;
+    }
+
     createImageNode(description) {
         let img = document.createElement("img");
         img.src = description.src;
@@ -310,6 +320,7 @@ export default class Game {
         let a = document.createElement("a");
         a.href = this.parsText(description.url);
         a.target = "_blank";
+        a.innerText = this.parsText(description.text)
         return a;
     }
 

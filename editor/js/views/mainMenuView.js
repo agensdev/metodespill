@@ -1,4 +1,4 @@
-import { readLocalTextFile } from '../utils.js'
+import { readLocalTextFile, clearCache } from '../utils.js'
 
 export default class MainMenuView {
     constructor(htmlContainer, delegates, autoSaveState) {
@@ -19,8 +19,15 @@ export default class MainMenuView {
         }
 
 
+        this.developerPurge = document.getElementById("developerPurge");
+        this.developerPurge.onclick = async () => {
+            await clearCache();
+            location.reload();
+        }
+
+
         this.exportGameBt.onclick = () => {
-            ///TODO. Export game to Firebase. 
+            ///TODO. Export game to cloude? 
             this.delegates.onExportComplete();
         }
 
@@ -36,8 +43,8 @@ export default class MainMenuView {
             this.delegates.onNewGame();
         }
 
-        this.newSectionBT.onclick = () => {
-            this.delegates.onNewSection();
+        this.newSectionBT.onclick = async () => {
+            await this.delegates.onNewSection();
         }
 
         this.fileExplorer.onchange = async (e) => {
