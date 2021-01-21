@@ -27,13 +27,10 @@ export default class SectionView {
         //this.view = this.container.appendChild(template);
         this.view = document.getElementById(this.sectionID); ///??? Uklart hvorfor jeg må gå via  this.view = document.getElementById(this.sectionID);
 
-        this.setupTitleEdit(this.source);
+
         this.setupDisplaySource(this.title, this.source);
-        this.setupHeaderEdit();
-        this.setupContentEdit();
-        this.setupActionsEdit();
-        this.setupStateEdit();
-        this.setupAuxEdit();
+        this.setup()
+
 
         let deleteBT = this.view.querySelector("button[data-role=deleteSection]");
         deleteBT.onclick = async () => {
@@ -42,6 +39,15 @@ export default class SectionView {
             await this.delegates.onChange();
         }
 
+    }
+
+    setup() {
+        this.setupTitleEdit(this.source);
+        this.setupHeaderEdit();
+        this.setupContentEdit();
+        this.setupActionsEdit();
+        this.setupStateEdit();
+        this.setupAuxEdit();
     }
 
     setupAuxEdit() {
@@ -429,9 +435,11 @@ export default class SectionView {
                 halfmoon.toggleModal('source-view');
             }
             addBt.onclick = async () => {
-                this.source.scenes[this.title] = JSON.parse(sourceCodeView.innerText); ///TODO: valider at json parse er vellyket.
+
+                this.source.scenes[this.title] = JSON.parse(sourceCodeView.innerText, null, 3); ///TODO: valider at json parse er vellyket.
                 halfmoon.toggleModal('source-view');
                 await this.delegates.onChange();
+                this.setup();
             }
         }
 
