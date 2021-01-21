@@ -18,6 +18,15 @@ export default class MainMenuView {
             await this.delegates.onAutoSaveTogle(this.autoSaveSwitch.checked)
         }
 
+        this.playWindow = null
+        this.playButton = document.getElementById("playGame");
+        this.playButton.onclick = () => {
+            ///TODO: Ikke kjør dersom det ikke finnes et spillbart spill
+            if (!this.playWindow) {
+                this.playWindow = window.open("../game", "PlayGame",)
+            }
+            this.playWindow.postMessage(window.app.gameSourceShadow, "*") ///TODO: Gjør dette bedre
+        }
 
         this.developerPurge = document.getElementById("developerPurge");
         this.developerPurge.onclick = async () => {

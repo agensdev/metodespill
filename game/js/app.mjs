@@ -15,6 +15,10 @@ class Application {
         await this.game.load()
     }
 
+    testGame(source) {
+        this.game.testGame("EditorGame", source, container, null);
+    }
+
     async registerServiceWorker() {
         const urlParams = new URLSearchParams(window.location.search);
         const reset = urlParams.get('resetPWA');
@@ -37,11 +41,17 @@ document.body.appendChild(container)
 
 window.onload = async () => {
     await app.registerServiceWorker()
-    let name = "Christian";
+    let name = "";
     while (name.length == 0) {
         name = window.prompt("Hva heter du?");
     }
     await app.loadGame(window.location.hash, { playerName: name });
     app.game.run();
 }
+
+window.addEventListener("message", (event) => {
+    let newGame = JSON.stringify(event.data);
+    app.testGame(newGame);
+
+}, false);
 

@@ -45,37 +45,26 @@ export default class SectionView {
 
     setupStateEdit() {
         let scene = this.source.scenes[this.title]
-        const contentView = this.view.querySelector("textarea[data-role=sceneActions]");
+        const contentView = this.view.querySelector("textarea[data-role=sceneStateChanges]");
 
-        let addActionbt = this.view.querySelector("button[data-role=state]");
+        let addStatebt = this.view.querySelector("button[data-role=state]");
 
-        const structures = {
-            state: {
-                "type": "inc",
-                "target": "drunk",
-                "value": 1
-            }
-        };
-
-
-
-        [addActionbt].forEach(bt => {
-            bt.onclick = async e => {
-                try {
-                    let currentScene = contentView.value ? JSON.parse(contentView.value) : [];
-                    let key = e.currentTarget.getAttribute("data-role");
-                    let newStruct = { ...structures[key] }
-                    currentScene.push(newStruct);
-                    contentView.value = JSON.stringify(currentScene, null, 3);
-                    scene.statechange = [...currentScene]
-                    await this.delegates.onChange();
-                } catch (error) {
-                    console.log(error);
-                    ///TODO: Bedre tilbake melding om hva feilen er
-                    this.delegates.onError("Actions contains errors that must be fixed before adding new content");
+        addStatebt.onclick = async e => {
+            try {
+                let state = await this.delegates.onAddNewState();
+                if (scene.statechange == null || scene.statechange == undefined) {
+                    scene.statechange = [];
                 }
+                scene.statechange.push({ type: state.type, target: state.key, value: state.value })
+                contentView.value = JSON.stringify(scene.statechange, null, 3);
+                await this.delegates.onChange();
+            } catch (error) {
+                console.log(error);
+                ///TODO: Bedre tilbake melding om hva feilen er
+                this.delegates.onError("Actions contains errors that must be fixed before adding new content");
             }
-        });
+        }
+
 
 
         if (scene.statechange && scene.statechange.length > 0) {

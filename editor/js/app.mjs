@@ -71,10 +71,13 @@ class Application {
         }
 
         delegate.onNewSection = async () => {
-            let title = "NewSection"
-            this.gameSourceShadow.scenes[title] = { statechange: [], clearSceneHistory: false, headerImage: null, header: [], content: [], actions: [], auxiliaryContent: {} }
-            await this.autoSaveSource()
-            new SectionView(title, this.gameSource, this.sections, this.delegates);
+            //TODO: Knappen bør være disabled når det ikke er noe spill 
+            if (this.gameSourceShadow) {
+                let title = "NewSection" ///TODO : Forsikre unike navn. 
+                this.gameSourceShadow.scenes[title] = { statechange: [], clearSceneHistory: false, headerImage: null, header: [], content: [], actions: [], auxiliaryContent: {} }
+                new SectionView(title, this.gameSource, this.sections, this.delegates);
+                await this.autoSaveSource()
+            }
         }
 
         return delegate;

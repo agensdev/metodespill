@@ -24,12 +24,28 @@ export default class Game {
         this.overlay = null;
 
         this.badges = null;
+    }
 
-
+    reset(gameID, container, presetState) {
+        this.gameID = gameID;
+        this.sourceCode = null;
+        this.container = container;
+        this.state = presetState || null;
+        this.scenes = null;
+        this.currentSceneId = null;
+        this.currentSceneData = null;
+        this.currentSceneUI = null;
+        this.overlay = null;
+        this.badges = null;
     }
 
     run() {
         d("Run game")
+
+        if (this.sourceCode.initialState == null || this.sourceCode.initialState == undefined) {
+            this.sourceCode.initialState = {}
+        }
+
         this.state = this.state ? merge(copy(this.sourceCode.initialState), this.state) : copy(this.sourceCode.initialState);
         this.scenes = copy(this.sourceCode.scenes);
         this.badges = new Badges(this.sourceCode.badges)
@@ -301,11 +317,24 @@ export default class Game {
     }
 
     createVideoNode(description) {
-        let img = document.createElement("img");
-        img.src = description.src;
-        img.alt = description.alt;
-        img.innerText = description.alt;
-        return img;
+        let a = document.createElement("a");
+        a.src = "#";
+        a.innerText = description.alt;
+        a.classList.add("videoLink")
+        a.onclick = () => {
+            let overlay = document.getElementById("overlay");
+            overlay.innerHTML = ""
+            let frame = document.createElement("iframe");
+            overlay.appendChild(frame);
+            frame.setAttribute("src", `https://www.youtube.com/embed/${description.src}`)
+            overlay.classList.remove("hidden")
+
+            overlay.onclick = () => {
+                overlay.classList.add("hidden")
+                overlay.innerHTML = "";
+            }
+        }
+        return a;
     }
 
     createImageNode(description) {
@@ -367,6 +396,12 @@ export default class Game {
         } else {
             throw ErrorMessages.no.error_no_such_game;
         }
+    }
+
+    testGame(gameName, source, container, state) {
+        this.reset(gameName, container, state);
+        this.sourceCode = JSON.parse(source);
+        this.run()
     }
 
     findScene(sceneId, scenes) {
