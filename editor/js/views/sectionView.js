@@ -33,6 +33,7 @@ export default class SectionView {
         this.setupContentEdit();
         this.setupActionsEdit();
         this.setupStateEdit();
+        this.setupAuxEdit();
 
         let deleteBT = this.view.querySelector("button[data-role=deleteSection]");
         deleteBT.onclick = async () => {
@@ -42,6 +43,131 @@ export default class SectionView {
         }
 
     }
+
+    setupAuxEdit() {
+        let scene = this.source.scenes[this.title]
+        const contentView = this.view.querySelector("textarea[data-role=sceneExtended]");
+
+        let addExtended = this.view.querySelector("button[data-role=extended]");
+        let addContent = this.view.querySelector("button[data-role=extendedContent]");
+        let addContentVideo = this.view.querySelector("button[data-role=extendedContentVideo]");
+
+        const structures = {
+            extended: {
+                "peek": {
+                    "img": "images/xxxxxx.xxx",
+                    "name": "xxxxx xxxx xx",
+                    "text": "xxxx xxx xxxxxx xxxx xxx xxx "
+                },
+                "content": [
+
+                ]
+            },
+            monolog: {
+                type: "monolog",
+                layout: "right",
+                img: "images/xxxxxx.xxx",
+                name: "xxxxx xxxxx"
+            },
+            dialogue: {
+                "type": "dialogue",
+                "layout": "left x||x right",
+                "img": "images/xxxxx.xxx",
+                "name": "xxxxxx xxxx",
+                "text": "xxxxxxx xxxxx xxxx xxxxx"
+            },
+            text: {
+                "type": "text",
+                "text": "xxxxxxx xxxxx xxxx xxxxx"
+            },
+            shout: {
+                "type": "shout",
+                "text": "xxxxxxx xxxxx xxxx xxxxx"
+            },
+            link: {
+                "type": "link",
+                "url": "https://xxxxxxx.xx/xxxx",
+                "text": "xxxxxxx xxxxx xxxx xxxxx"
+            },
+            image: {
+                "type": "img",
+                "src": "images/xxxxxx.xxx",
+                "alt": "xxxxxxx xxxxx xxxx xxxxx"
+            },
+            video: {
+                "type": "video",
+                "src": "xxxx Embed Code xxxx",
+                "alt": "xxxxxxx xxxxx xxxx xxxxx"
+            }
+        };
+
+        addExtended.onclick = async e => {
+            try {
+                scene.auxiliaryContent = JSON.parse(JSON.stringify(structures.extended))
+                contentView.value = JSON.stringify(scene.auxiliaryContent, null, 3);
+                await this.delegates.onChange();
+            } catch (error) {
+                console.log(error);
+                ///TODO: Bedre tilbake melding om hva feilen er
+                this.delegates.onError("Extension contains errors that must be fixed before adding new content");
+            }
+        }
+
+        addContent.onclick = async e => {
+            try {
+                let current = JSON.parse(contentView.value)
+                if (current.content == null || current.content == undefined) {
+                    current.content = [];
+                }
+                current.content.push(JSON.parse(JSON.stringify(structures.dialogue)));
+                scene.auxiliaryContent = current;
+                contentView.value = JSON.stringify(scene.auxiliaryContent, null, 3);
+                await this.delegates.onChange();
+            } catch (error) {
+                console.log(error);
+                ///TODO: Bedre tilbake melding om hva feilen er
+                this.delegates.onError("Extension contains errors that must be fixed before adding new content");
+            }
+        }
+
+        addContentVideo.onclick = async e => {
+            try {
+                let current = JSON.parse(contentView.value)
+                if (current.content == null || current.content == undefined) {
+                    current.content = [];
+                }
+                current.content.push(JSON.parse(JSON.stringify(structures.video)));
+                scene.auxiliaryContent = current;
+                contentView.value = JSON.stringify(scene.auxiliaryContent, null, 3);
+                await this.delegates.onChange();
+            } catch (error) {
+                console.log(error);
+                ///TODO: Bedre tilbake melding om hva feilen er
+                this.delegates.onError("Extension contains errors that must be fixed before adding new content");
+            }
+        }
+
+
+        if (scene.auxiliaryContent) {
+            contentView.value = JSON.stringify(scene.auxiliaryContent, null, 3);
+        } else {
+            contentView.value = ""
+        }
+
+        contentView.onchange = async e => {
+            try {
+                scene.auxiliaryContent = JSON.parse(contentView.value)
+                await this.delegates.onChange();
+            } catch (error) {
+                console.log(error);
+                ///TODO: Bedre tilbake melding om hva feilen er
+                this.delegates.onError("Extension contains errors that must be fixed before continuing");
+            }
+        }
+
+    }
+
+
 
     setupStateEdit() {
         let scene = this.source.scenes[this.title]
@@ -188,7 +314,7 @@ export default class SectionView {
             },
             video: {
                 "type": "video",
-                "src": "https://xxxxxxx.xx/xxxx",
+                "src": "xxxx Embed Code xxxx",
                 "alt": "xxxxxxx xxxxx xxxx xxxxx"
             }
         };
