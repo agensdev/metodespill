@@ -41,6 +41,7 @@ class Application {
         if (reset) {
             d("Deliting PWA cache")
             caches.delete("metodeSpillPWA");
+            Storage.clear()
         }
 
         if ('serviceWorker' in navigator) {
@@ -64,12 +65,13 @@ window.onload = async () => {
         await HTMLUtilityTools.loadAndEmbedTemplate("components/profile.html");
         await HTMLUtilityTools.loadAndEmbedTemplate("components/scene.html");
         await HTMLUtilityTools.loadAndEmbedTemplate("components/createProfile.html");
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/avatarselection.html");
     } catch (error) {
         console.error(error);
     }
 
     await app.playerProfile()
-    await app.loadGame(window.location.hash, { playerName: app.player.name });
+    await app.loadGame(window.location.hash, { playerName: app.player.name, playerAvatar: app.player.avatar });
     app.game.run();
 }
 

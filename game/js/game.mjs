@@ -302,7 +302,7 @@ export default class Game {
 
         let node = document.querySelector("#monologTemplate").content.cloneNode(true);
         let portrait = node.querySelector(".portrait");
-        portrait.src = description.img;
+        portrait.src = this.parsText(description.img);
 
         let name = node.querySelector(".actorName");
         name.innerText = this.parsText(description.name);
@@ -328,7 +328,7 @@ export default class Game {
         }
 
         const portrait = node.querySelector(".portrait");
-        portrait.src = description.img;
+        portrait.src = this.parsText(description.img);
 
         const name = node.querySelector("#actorName");
         name.innerText = this.parsText(description.name);

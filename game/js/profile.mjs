@@ -20,6 +20,7 @@ class Profile {
         container.appendChild(view);
 
         let avatar = document.getElementById("playerAvatar")
+        avatar.src = this.avatar;
 
         let name = document.getElementById("playerName")
         name.innerText = this.name;
@@ -65,6 +66,31 @@ class ProfileBuilder {
         this.container = container;
         this.view = HTMLUtilityTools.createInstanceOfTemplate("createPlayerProfile");
         container.appendChild(this.view);
+
+
+        let selectedAvatar = document.getElementById("avatarImage")
+        selectedAvatar.onclick = (e) => {
+            let profile = document.getElementById("holder");
+            profile.classList.add("hidden")
+
+            let selectAvatar = HTMLUtilityTools.createInstanceOfTemplate("avatarSelectionTemplate");
+
+            container.appendChild(selectAvatar);
+
+            let images = document.querySelectorAll(".badge")
+            images.forEach(img => {
+                img.onclick = (e) => {
+                    selectedAvatar.src = e.target.src;
+                    let avatars = document.getElementById("avatarSelector");
+                    let storage = document.getElementById("profileAvatar");
+                    storage.value = e.target.dataset.img;
+                    avatars.parentElement.removeChild(avatars);
+                    profile.classList.remove("hidden");
+                }
+            })
+
+        }
+
     }
 
     async queryProfile() {

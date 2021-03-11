@@ -86,7 +86,7 @@
                 {
                     "type": "dialogue",
                     "layout": "left",
-                    "img": "images/player.png",
+                    "img": "{$playerAvatar}",
                     "name": "{$playerName}",
                     "text": "På tide med en kopp te!"
                 },
