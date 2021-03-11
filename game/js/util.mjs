@@ -46,5 +46,27 @@ const animateCSS = function (element, animation, duration = 1, prefix = 'animate
 }
 
 
+class Storage {
 
-export { copy, merge, pickRandom, rnd, validateConditions, animateCSS };
+    // In the future these opperations will probably be run against a server so I am wraping them in this helper class.
+
+    static save(key, value) {
+        localStorage.setItem(key, value);
+    }
+
+    static retrive(key) {
+        return localStorage.getItem(key);
+    }
+
+    static delete(key) {
+        localStorage.removeItem(key);
+    }
+
+    static clear() {
+        localStorage.clear();
+    }
+}
+
+
+
+export { copy, merge, pickRandom, rnd, validateConditions, animateCSS, Storage };

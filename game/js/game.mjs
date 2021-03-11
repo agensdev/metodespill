@@ -2,6 +2,7 @@ import d from './debug.mjs';
 import ErrorMessages from './l8n.mjs'
 import { copy, merge, validateConditions, animateCSS } from './util.mjs'
 import Badges from './badges.mjs'
+import { Profile } from './profile.mjs'
 
 export default class Game {
     constructor(gameID, container, presetState) {
@@ -24,6 +25,9 @@ export default class Game {
         this.overlay = null;
 
         this.badges = null;
+
+        this.player = Profile.storedProfile()
+
     }
 
     reset(gameID, container, presetState) {
@@ -49,6 +53,8 @@ export default class Game {
         this.state = this.state ? merge(copy(this.sourceCode.initialState), this.state) : copy(this.sourceCode.initialState);
         this.scenes = copy(this.sourceCode.scenes);
         this.badges = new Badges(this.sourceCode.badges)
+
+        this.badges.addPreviouslyEarndBadges(this.player.badges);
 
         this.overlay = document.body.querySelector(".exp");
         this.overlay.addEventListener("click", e => {
@@ -95,7 +101,26 @@ export default class Game {
 
             let newBadges = this.badges.findNewlyEarndBadges(this.state);
             if (newBadges.length > 0) {
-                d(newBadges);
+
+                let overlay = document.getElementById("overlay");
+
+                newBadges.forEach(badge => {
+                    let display = document.createElement("img");
+                    display.src = badge.img;
+                    overlay.appendChild(display);
+                    this.player.badges.push(badge);
+
+                });
+
+                this.player.save()
+
+                overlay.classList.remove("hidden")
+
+                overlay.onclick = () => {
+                    overlay.classList.add("hidden")
+                    overlay.innerHTML = "";
+                }
+
             }
 
         } else {

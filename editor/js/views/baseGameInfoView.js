@@ -1,4 +1,6 @@
 import { HTMLUtilityTools, HTMLSelectorTools } from '../uiExt.js'
+import { readLocalBinaryFile } from '../utils.js'
+import Suggestion from '../suggestion.js'
 
 export default class BaseGameInfoView {
     constructor(source, container, delegates) {
@@ -12,6 +14,9 @@ export default class BaseGameInfoView {
         this.initialStateDisplay = document.getElementById("initialGameStates");
         this.addStateBt = document.getElementById("addNewInitialStateBt");
 
+        this.uploadList = null;
+        this.loadedImages = [];
+
         this.gameNameView.value = source.gameName || "";
         this.gameDescription.value = source.description || "";
 
@@ -20,6 +25,21 @@ export default class BaseGameInfoView {
         this.gameNameView.onchange = () => { source.gameName = this.gameNameView.value; }
         this.gameDescription.onchange = () => { source.description = this.gameDescription.value; }
         this.sceneSelection.onchange = () => { source.start = this.sceneSelection.value; }
+
+        this.files = document.getElementById("dnd");
+        this.files.ondrop = async ev => {
+            ev.preventDefault();
+            if (ev.dataTransfer.items) {
+                this.uploadList = ev.dataTransfer.items
+                await this.uploadFiles(this.uploadList);
+            }
+        }
+
+
+        this.files.ondragover = e => {
+            e.preventDefault();
+        }
+
 
         this.addStateBt.onclick = async () => {
             let state = await delegates.onAddNewState();
@@ -32,6 +52,36 @@ export default class BaseGameInfoView {
         }
 
         this.populateState(this.initialStateDisplay, source);
+    }
+
+    async uploadFiles(items) {
+
+        let files = Object.entries(items).map(item => {
+            let file = item[1].getAsFile();
+            return file;
+        })
+
+        await files.forEach(async file => {
+            let imgFile = await readLocalBinaryFile(file);
+
+            window.app.loadedImages.push({ name: file.name, data: imgFile });
+
+            var thumbSize = 64;
+            var canvas = document.createElement("canvas");
+            canvas.width = thumbSize;
+            canvas.height = thumbSize;
+            var c = canvas.getContext("2d");
+
+            var img = new Image();
+            img.onload = function (e) {
+                c.drawImage(this, 0, 0, thumbSize, thumbSize);
+                document.getElementById("imageFileList").appendChild(canvas);
+            };
+            img.src = imgFile;
+
+            // Making file names avalable for autocomplete in image fields
+            Suggestion.addSuggestion(`images/${file.name}`, Suggestion.IMAGES);
+        })
     }
 
     update() {

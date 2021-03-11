@@ -35,9 +35,11 @@ export default class MainMenuView {
         }
 
 
-        this.exportGameBt.onclick = () => {
-            ///TODO. Export game to cloude? 
-            this.delegates.onExportComplete();
+        if (this.exportGameBt) {
+            this.exportGameBt.onclick = () => {
+                ///TODO. Export game to cloude? 
+                this.delegates.onExportComplete();
+            }
         }
 
         this.saveGameBt.onclick = () => {

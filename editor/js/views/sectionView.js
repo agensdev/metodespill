@@ -1,5 +1,6 @@
 import { HTMLUtilityTools, HTMLSelectorTools } from '../uiExt.js'
 import { readLocalBinaryFile, saveToLocalCache, getFromLocalCache } from '../utils.js'
+import Suggestion from '../suggestion.js'
 
 export default class SectionView {
 
@@ -382,9 +383,15 @@ export default class SectionView {
             description.value = scene.header[0].text;
         }
 
-        ///TODO: Funksjon for å ta bort header bilde dersom man ikke vil ha det lengre
-
+        imagePicker.setAttribute("list", Suggestion.IMAGES);
         imagePicker.onchange = async (e) => {
+            scene.headerImage = scene.headerImage || {};
+            scene.headerImage.src = imagePicker.value
+            scene.headerImage.alt = "decorative header" ///TODO: UI for å sette alt tekst.
+            await this.delegates.onChange();
+        }
+
+        /*imagePicker.onchange = async (e) => {
             const file = e.target.files[0];
             try {
                 const image = await readLocalBinaryFile(file);
@@ -416,7 +423,7 @@ export default class SectionView {
             }
         } catch (error) {
             console.log(error)
-        }
+        }*/
 
 
 

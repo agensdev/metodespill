@@ -1,18 +1,33 @@
 
 import Game from './game.mjs'
+import { ProfileBuilder, Profile } from './profile.mjs'
 import d from './debug.mjs'
-
+import { copy, merge, validateConditions, animateCSS, Storage } from './util.mjs'
+import { HTMLUtilityTools } from './uiExt.js'
 
 class Application {
 
     constructor() {
         this.game = null;
+        this.player = null;
     }
 
     async loadGame(gameID, gamePresetState) {
         gameID ||= "default";
         this.game = new Game(gameID, container, gamePresetState)
         await this.game.load()
+    }
+
+    async playerProfile() {
+        let p = Profile.storedProfile()
+        if (p === null) {
+            let profileData = await (new ProfileBuilder(container)).queryProfile();
+            p = new Profile(profileData)
+        } else {
+            await p.show(container);
+        }
+        this.player = p;
+        return p;
     }
 
     testGame(source) {
@@ -29,7 +44,7 @@ class Application {
         }
 
         if ('serviceWorker' in navigator) {
-            await navigator.serviceWorker.register('/js/sw.js').catch(err => console.log(err));
+            await navigator.serviceWorker.register('./js/sw.js').catch(err => console.log(err));
         }
     };
 }
@@ -41,11 +56,20 @@ document.body.appendChild(container)
 
 window.onload = async () => {
     await app.registerServiceWorker()
-    let name = "";
-    while (name.length == 0) {
-        name = window.prompt("Hva heter du?");
+
+    try {
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/dialogue.html");
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/monolog.html");
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/peek.html");
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/profile.html");
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/scene.html");
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/createProfile.html");
+    } catch (error) {
+        console.error(error);
     }
-    await app.loadGame(window.location.hash, { playerName: name });
+
+    await app.playerProfile()
+    await app.loadGame(window.location.hash, { playerName: app.player.name });
     app.game.run();
 }
 

@@ -1,6 +1,7 @@
 
 import { saveToLocalCache, getFromLocalCache, readLocalTextFile } from './utils.js'
 import { HTMLUtilityTools } from './uiExt.js'
+import Suggestion from './suggestion.js'
 
 import MainMenuView from './views/mainMenuView.js'
 import BaseGameInfoView from './views/baseGameInfoView.js'
@@ -15,6 +16,7 @@ class Application {
         this.gameSourceShadow = null;
         this.autoSave = autoSave
         this.mainMenu = new MainMenuView(document.getElementById("mainMenu"), this.delegates, this.autoSave);
+        this.loadedImages = []
 
         this.updateListeners = [];
 
@@ -48,22 +50,40 @@ class Application {
         }
 
         delegate.onChange = async () => {
-            await this.autoSaveSource()
+            await this.autoSaveSource();
             this.updateListeners.forEach(listener => listener.update());
         }
 
         delegate.onSaveGame = () => {
-            var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(this.gameSourceShadow)));
-            element.setAttribute('download', `${this.gameSourceShadow.gameName}.json`); ///TODO make name safe.
-            element.style.display = 'none';
-            document.body.appendChild(element);
-            element.click();
-            document.body.removeChild(element);
+
+            let zip = new JSZip();
+            zip.file(`${this.gameSourceShadow.gameName}.json`, JSON.stringify(this.gameSourceShadow));
+            let imgDir = zip.folder("images");
+
+            this.loadedImages.forEach(img => {
+                let source = img.data.replace(/^.*?base64,/, '')
+                let data = atob(source, source.length)
+                let asArray = new Uint8Array(data.length);
+                for (var i = 0, len = data.length; i < len; ++i) {
+                    asArray[i] = data.charCodeAt(i);
+                }
+                var blob = new Blob([asArray.buffer], { type: "image/png" });
+                imgDir.file(img.name, blob);
+            });
+
+            zip.generateAsync({ type: "blob" })
+                .then(function (content) {
+                    saveAs(content, `${window.app.gameSourceShadow.gameName}.zip`)
+                });
+
         }
 
         delegate.onAddNewState = async () => {
             return await this.addNewState();
+        }
+
+        delegate.onAddNewBadge = async () => {
+            return await this.addNewBadge();
         }
 
         delegate.onExportComplete = () => {
@@ -150,6 +170,46 @@ class Application {
         });
     }
 
+    async addNewBadge() {
+        return new Promise((resolve, reject) => {
+
+            halfmoon.toggleModal('modal-newBadge');
+            let addBt = document.querySelector("#saveNewBadgeBt");
+            let cancelBt = document.querySelector("#cancelNewBadgeBt");
+
+            let title = document.querySelector("#newBadgeTitle");
+            let description = document.querySelector("#newBadgeDescription");
+            let rules = document.querySelector("#newBadgeRules");
+            let image = document.querySelector("#newBadgeImage");
+            image.setAttribute("list", Suggestion.IMAGES)
+
+            [title, description, rules, image].forEach(item => item.value = "")
+
+            cancelBt.onclick = () => {
+                resolve(null)
+                halfmoon.toggleModal('modal-newBadge');
+            }
+            addBt.onclick = () => {
+
+                let conditions = rules.value.split(",").map(item => {
+                    let keyValue = item.split(":");
+                    return { target: keyValue[0], value: keyValue[1] }
+                }) || null;
+
+                resolve({
+                    name: title.value,
+                    description: description.value,
+                    img: image.value,
+                    display: false,
+                    version: 1,
+                    conditions: conditions
+                });
+                halfmoon.toggleModal('modal-newBadge');
+            }
+
+        });
+    }
+
 
     alert(title, content, type) {
         // type = default: "", must be "alert-primary" || "alert-success" || "alert-secondary" || "alert-danger"
@@ -185,6 +245,7 @@ window.onload = async () => {
         await HTMLUtilityTools.loadAndEmbedTemplate("components/stateButtons.html");
         await HTMLUtilityTools.loadAndEmbedTemplate("components/sectionView.html");
         await HTMLUtilityTools.loadAndEmbedTemplate("components/sourceModal.html");
+        await HTMLUtilityTools.loadAndEmbedTemplate("components/themeSection.html");
     } catch (error) {
         console.error(error);
     }

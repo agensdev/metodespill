@@ -302,7 +302,7 @@
         {
             "name": "Te lover",
             "description": "Selv når verden står i flammer tar du ting med knusende ro og dirkker en god kopp te",
-            "img": "badge_te.svg",
+            "img": "images/badge_te.svg",
             "display": true,
             "version": 1,
             "conditions": [
@@ -315,7 +315,7 @@
         {
             "name": "Level 1 Complete",
             "description": "Du har fullført nivå 1.....",
-            "img": "badgelevel1.png",
+            "img": "images/badgelevel1.png",
             "display": false,
             "version": 1,
             "conditions": [

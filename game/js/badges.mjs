@@ -7,6 +7,10 @@ export default class BadgeManager {
         this.collected = []
     }
 
+    addPreviouslyEarndBadges(badges) {
+        this.collected = this.collected.concat(badges)
+    }
+
     findNewlyEarndBadges(state) {
         return this.badges.filter(badge => {
             let collect = false;
