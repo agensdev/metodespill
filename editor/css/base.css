@@ -1,8 +1,6 @@
-
-
 .thumbnail {
-    max-width: 320px;
-
+    max-width: 64px;
+    padding: 4px;
 }
 
 *[contenteditable="true"] {

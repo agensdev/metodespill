@@ -75,8 +75,10 @@ window.onload = async () => {
     app.game.run();
 }
 
-window.addEventListener("message", (event) => {
+window.addEventListener("message", async (event) => {
     let newGame = JSON.stringify(event.data);
+    await app.playerProfile()
+    d("Runing sync game")
     app.testGame(newGame);
 
 }, false);

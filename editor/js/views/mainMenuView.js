@@ -1,4 +1,4 @@
-import { readLocalTextFile, clearCache } from '../utils.js'
+import { readLocalTextFile, readLocalBinaryFile, clearCache } from '../utils.js'
 
 export default class MainMenuView {
     constructor(htmlContainer, delegates, autoSaveState) {
@@ -9,14 +9,14 @@ export default class MainMenuView {
         this.newGameBt = document.getElementById("createNewGameBt")
         this.saveGameBt = document.getElementById("saveGameBt")
         this.exportGameBt = document.getElementById("exportGameBt")
-        this.autoSaveSwitch = document.getElementById("autoSaveSwitch")
+        //this.autoSaveSwitch = document.getElementById("autoSaveSwitch")
         this.newSectionBT = document.getElementById("newSectionBT");
         this.delegates = delegates
 
-        this.autoSaveSwitch.checked = autoSaveState || false;
+        /*this.autoSaveSwitch.checked = autoSaveState || false;
         this.autoSaveSwitch.onchange = async (e) => {
             await this.delegates.onAutoSaveTogle(this.autoSaveSwitch.checked)
-        }
+        }*/
 
         this.playWindow = null
         this.playButton = document.getElementById("playGame");
@@ -28,11 +28,13 @@ export default class MainMenuView {
             this.playWindow.postMessage(window.app.gameSourceShadow, "*") ///TODO: Gjør dette bedre
         }
 
+        /*
         this.developerPurge = document.getElementById("developerPurge");
         this.developerPurge.onclick = async () => {
             await clearCache();
             location.reload();
         }
+        */
 
 
         if (this.exportGameBt) {
@@ -61,8 +63,8 @@ export default class MainMenuView {
         this.fileExplorer.onchange = async (e) => {
             const file = e.target.files[0];
             try {
-                const script = await readLocalTextFile(file);
-                this.delegates.onGameLoaded(script);
+                //const data = await readLocalBinaryFile(file);
+                await this.delegates.onGamePackageLoaded(file);
             } catch (error) {
                 console.error(error);
                 this.delegates.onError("Could not load game source file");

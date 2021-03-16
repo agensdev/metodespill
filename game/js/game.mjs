@@ -113,7 +113,6 @@ export default class Game {
                 });
 
                 this.player.save()
-
                 overlay.classList.remove("hidden")
 
                 overlay.onclick = () => {

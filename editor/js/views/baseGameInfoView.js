@@ -17,6 +17,14 @@ export default class BaseGameInfoView {
         this.uploadList = null;
         this.loadedImages = [];
 
+        // Vis bilder som allerede er tilgjengelige
+        /// TODO: Gjør dette bedre. 
+        if (window.app && window.app.loadedImages) {
+            window.app.loadedImages.forEach(img => {
+                this.displayThumbFromBlob(img.data);
+            });
+        }
+
         this.gameNameView.value = source.gameName || "";
         this.gameDescription.value = source.description || "";
 
@@ -62,26 +70,25 @@ export default class BaseGameInfoView {
         })
 
         await files.forEach(async file => {
-            let imgFile = await readLocalBinaryFile(file);
+            let type = { type: `"image/${file.name.substring(file.name.indexOf(".") + 1)}" ` }
+            let buffer = await readLocalBinaryFile(file);
+            let imgFile = new Blob([new Uint8Array(buffer)], type);
+            this.displayThumbFromBlob(imgFile)
 
+            /// TODO: Dette burde få en egen util funksjon eller noe.
             window.app.loadedImages.push({ name: file.name, data: imgFile });
-
-            var thumbSize = 64;
-            var canvas = document.createElement("canvas");
-            canvas.width = thumbSize;
-            canvas.height = thumbSize;
-            var c = canvas.getContext("2d");
-
-            var img = new Image();
-            img.onload = function (e) {
-                c.drawImage(this, 0, 0, thumbSize, thumbSize);
-                document.getElementById("imageFileList").appendChild(canvas);
-            };
-            img.src = imgFile;
 
             // Making file names avalable for autocomplete in image fields
             Suggestion.addSuggestion(`images/${file.name}`, Suggestion.IMAGES);
         })
+    }
+
+    displayThumbFromBlob(data) {
+        var img = new Image();
+        img.src = URL.createObjectURL(data);
+        img.classList.add("thumbnail");
+        document.getElementById("imageFileList").appendChild(img);
+
     }
 
     update() {

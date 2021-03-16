@@ -14,7 +14,7 @@ class Application {
         this.sections = document.getElementById("sections");
         this.delegates = this.createDelegateHandler();
         this.gameSourceShadow = null;
-        this.autoSave = autoSave
+        this.autoSave = true
         this.mainMenu = new MainMenuView(document.getElementById("mainMenu"), this.delegates, this.autoSave);
         this.loadedImages = []
 
@@ -44,6 +44,8 @@ class Application {
 
         delegate.onGameLoaded = (script) => { this.loadScript(script) }
 
+        delegate.onGamePackageLoaded = async (data) => { await this.loadGamePackage(data) }
+
         delegate.onAutoSaveTogle = async (save) => {
             this.autoSave = save;
             await saveToLocalCache("autoSave", save);
@@ -60,15 +62,9 @@ class Application {
             zip.file(`${this.gameSourceShadow.gameName}.json`, JSON.stringify(this.gameSourceShadow));
             let imgDir = zip.folder("images");
 
+            // Add images.
             this.loadedImages.forEach(img => {
-                let source = img.data.replace(/^.*?base64,/, '')
-                let data = atob(source, source.length)
-                let asArray = new Uint8Array(data.length);
-                for (var i = 0, len = data.length; i < len; ++i) {
-                    asArray[i] = data.charCodeAt(i);
-                }
-                var blob = new Blob([asArray.buffer], { type: "image/png" });
-                imgDir.file(img.name, blob);
+                imgDir.file(img.name, img.data);
             });
 
             zip.generateAsync({ type: "blob" })
@@ -118,6 +114,27 @@ class Application {
             }
             console.log("Autosave complete");
         }
+    }
+
+    async loadGamePackage(data) {
+        let zip = await JSZip.loadAsync(data);
+        let script = null
+
+        // Pakk ut filer fra zip fil.
+        // Bilder lagres som blobs.
+        for (const [key, item] of Object.entries(zip.files)) {
+            if (item.name.indexOf(".json") > 0) {
+                script = await item.async("string");
+            } else if (item.dir !== true && item.name.indexOf("image") >= 0) {
+                let type = { type: `"image/${item.name.substring(item.name.indexOf(".") + 1)}" ` };
+                var imgBlob = new Blob([await item.async("arraybuffer")], type);
+                this.loadedImages.push({ name: item.name, data: imgBlob });
+                Suggestion.addSuggestion(item.name, Suggestion.IMAGES);
+            }
+        }
+
+        this.loadScript(JSON.parse(script));
+
     }
 
     loadScript(script) {
@@ -183,7 +200,8 @@ class Application {
             let image = document.querySelector("#newBadgeImage");
             image.setAttribute("list", Suggestion.IMAGES)
 
-            [title, description, rules, image].forEach(item => item.value = "")
+            [title, description, rules, image].forEach(item =>
+                item.value = "")
 
             cancelBt.onclick = () => {
                 resolve(null)

@@ -16,6 +16,7 @@ class Profile {
     }
 
     async show(container) {
+        container.innerHTML = ""
         const view = HTMLUtilityTools.createInstanceOfTemplate("playerProfile");
         container.appendChild(view);
 

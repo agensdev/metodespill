@@ -33,7 +33,7 @@ async function readLocalBinaryFile(file) {
             resolve(reader.result);
         };
         reader.onerror = reject;
-        reader.readAsDataURL(file)
+        reader.readAsArrayBuffer(file)
     })
 }
 
