@@ -14,6 +14,7 @@ class Application {
         this.sections = document.getElementById("sections");
         this.delegates = this.createDelegateHandler();
         this.gameSourceShadow = null;
+        this.gameSource = null;
         this.autoSave = true
         this.mainMenu = new MainMenuView(document.getElementById("mainMenu"), this.delegates, this.autoSave);
         this.loadedImages = []
@@ -59,7 +60,7 @@ class Application {
         delegate.onSaveGame = () => {
 
             let zip = new JSZip();
-            zip.file(`${this.gameSourceShadow.gameName}.json`, JSON.stringify(this.gameSourceShadow));
+            zip.file(`${this.gameSource.gameName}.json`, JSON.stringify(this.gameSource));
             let imgDir = zip.folder("images");
 
             // Add images.
@@ -69,7 +70,7 @@ class Application {
 
             zip.generateAsync({ type: "blob" })
                 .then(function (content) {
-                    saveAs(content, `${window.app.gameSourceShadow.gameName}.zip`)
+                    saveAs(content, `${window.app.gameSource.gameName}.zip`)
                 });
 
         }
@@ -88,9 +89,9 @@ class Application {
 
         delegate.onNewSection = async () => {
             //TODO: Knappen bør være disabled når det ikke er noe spill 
-            if (this.gameSourceShadow) {
+            if (this.gameSource) {
                 let title = "NewSection" ///TODO : Forsikre unike navn. 
-                this.gameSourceShadow.scenes[title] = { statechange: [], clearSceneHistory: false, headerImage: null, header: [], content: [], actions: [], auxiliaryContent: {} }
+                this.gameSource.scenes[title] = { statechange: [], clearSceneHistory: false, headerImage: null, header: [], content: [], actions: [], auxiliaryContent: {} }
                 new SectionView(title, this.gameSource, this.sections, this.delegates);
                 await this.autoSaveSource()
             }
@@ -108,7 +109,7 @@ class Application {
     async autoSaveSource() {
         if (this.autoSave) {
             try {
-                await saveToLocalCache("gameSource", this.gameSourceShadow);
+                await saveToLocalCache("gameSource", this.gameSource);
             } catch (error) {
                 this.alert("Auto Save Failed", "Could not autosave changes", "alert-danger")
             }
@@ -269,4 +270,13 @@ window.onload = async () => {
     }
 
     window.app = new Application(autoSave, script);
+
+
+    document.onkeydown = async function (e) {
+        if (e.ctrlKey && e.key === "s") {
+            await window.app.autoSaveSource();
+            return false;
+        }
+    };
+
 }

@@ -31,6 +31,9 @@ class Application {
     }
 
     testGame(source) {
+        if (!this.game) {
+            this.game = new Game("EditorGame", container, null)
+        }
         this.game.testGame("EditorGame", source, container, null);
     }
 

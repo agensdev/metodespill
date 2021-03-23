@@ -25,30 +25,30 @@ export default class SectionView {
         let template = HTMLUtilityTools.createInstanceOfTemplate("sectionViewTemplate", this.sectionID);
         const anchor = this.container.firstElementChild.nextSibling || this.container.firstElementChild;
         this.view = this.container.insertBefore(template, anchor)
-        //this.view = this.container.appendChild(template);
-        this.view = document.getElementById(this.sectionID); ///??? Uklart hvorfor jeg må gå via  this.view = document.getElementById(this.sectionID);
+        this.view = document.getElementById(this.sectionID);
 
-
-        this.setupDisplaySource(this.title, this.source);
         this.setup()
-
-
-        let deleteBT = this.view.querySelector("button[data-role=deleteSection]");
-        deleteBT.onclick = async () => {
-            delete this.source.scenes[this.title];
-            this.view.parentNode.removeChild(this.view);
-            await this.delegates.onChange();
-        }
 
     }
 
     setup() {
+        this.setupDisplaySource(this.title, this.source);
         this.setupTitleEdit(this.source);
         this.setupHeaderEdit();
         this.setupContentEdit();
         this.setupActionsEdit();
         this.setupStateEdit();
         this.setupAuxEdit();
+        this.setupDelete()
+    }
+
+    setupDelete() {
+        let deleteBT = this.view.querySelector("button[data-role=deleteSection]");
+        deleteBT.onclick = async () => {
+            delete this.source.scenes[this.title];
+            this.view.parentNode.removeChild(this.view);
+            await this.delegates.onChange();
+        }
     }
 
     setupAuxEdit() {

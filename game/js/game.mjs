@@ -145,7 +145,7 @@ export default class Game {
 
     applyAuxiliaryContent(contnet, container) {
         const footer = container.querySelector(".footer");
-        if (contnet) {
+        if (contnet && contnet.peek) {
             const node = document.querySelector("#peekTemplate").content.cloneNode(true);
             const img = node.querySelector("img");
             img.src = contnet.peek.img;
