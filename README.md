@@ -84,6 +84,18 @@ I tillegg kan scener har utvidet info som kan være ledetråder eller flere ress
 
 [Video kommer her]
 
+[Hva er Metodos](https://user-images.githubusercontent.com/1419964/112204433-f2c20180-8c13-11eb-89ad-c6ca04eedf89.mp4)
+
+[Metodos filformat](https://user-images.githubusercontent.com/1419964/112204851-71b73a00-8c14-11eb-815c-d6d62432d6a5.mp4)
+
+[Metodos spillmotor](https://user-images.githubusercontent.com/1419964/112204921-885d9100-8c14-11eb-919f-eccf2d226dda.mp4)
+
+
+
+
+
+
+
 ## URLer
 
 Prosjekt plan: https://trello.com/b/y14DUpO6/uia-metodespill  
