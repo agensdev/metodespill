@@ -82,8 +82,6 @@ I tillegg kan scener har utvidet info som kan være ledetråder eller flere ress
 
 ### Steg 5: Legge det inn i editoren
 
-[Video kommer her]
-
 [Hva er Metodos](https://user-images.githubusercontent.com/1419964/112204433-f2c20180-8c13-11eb-89ad-c6ca04eedf89.mp4)
 
 [Metodos filformat](https://user-images.githubusercontent.com/1419964/112204851-71b73a00-8c14-11eb-815c-d6d62432d6a5.mp4)
