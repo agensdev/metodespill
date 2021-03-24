@@ -90,6 +90,16 @@ I tillegg kan scener har utvidet info som kan være ledetråder eller flere ress
 
 [Metodos spillmotor](https://user-images.githubusercontent.com/1419964/112204921-885d9100-8c14-11eb-919f-eccf2d226dda.mp4)
 
+[Metodos spillerprofil](https://user-images.githubusercontent.com/1419964/112261865-e61dc780-8c6c-11eb-97ea-8fff3e28d07a.mp4)
+
+[Editor oversikt](https://user-images.githubusercontent.com/1419964/112262404-e5d1fc00-8c6d-11eb-8b1d-42113624b75a.mp4)
+- [Editor nytt spill](https://user-images.githubusercontent.com/1419964/112263647-ef5c6380-8c6f-11eb-8743-c1a1972d3fff.mp4)
+- [Editor seksjon oversikt](https://user-images.githubusercontent.com/1419964/112264379-16fffb80-8c71-11eb-9fc2-e56e62771b99.mp4)
+
+
+
+
+
 
 
 
