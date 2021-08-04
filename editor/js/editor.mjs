@@ -199,10 +199,9 @@ class Application {
             let description = document.querySelector("#newBadgeDescription");
             let rules = document.querySelector("#newBadgeRules");
             let image = document.querySelector("#newBadgeImage");
-            image.setAttribute("list", Suggestion.IMAGES)
+            image.setAttribute("list", Suggestion.IMAGES);
 
-            [title, description, rules, image].forEach(item =>
-                item.value = "")
+            [title, description, rules, image].forEach(item => item.value = "")
 
             cancelBt.onclick = () => {
                 resolve(null)
