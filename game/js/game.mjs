@@ -150,7 +150,7 @@ export default class Game {
             const img = node.querySelector("img");
             img.src = contnet.peek.img;
             const msg = node.querySelector("#peekMessage")
-            msg.innerText = this.parsText(contnet.peek.text);
+            msg.innerText = this.parseText(contnet.peek.text);
             footer.appendChild(node)
 
             footer.addEventListener("click", (e) => {
@@ -230,7 +230,7 @@ export default class Game {
             actions.forEach(action => {
                 if (validateConditions(action.conditions, this.state)) {
                     let bt = document.createElement("button");
-                    bt.innerText = this.parsText(action.description);
+                    bt.innerText = this.parseText(action.description);
                     bt.title = action.title;
                     bt.onclick = e => {
                         if (action.statechange) {
@@ -301,10 +301,10 @@ export default class Game {
 
         let node = document.querySelector("#monologTemplate").content.cloneNode(true);
         let portrait = node.querySelector(".portrait");
-        portrait.src = this.parsText(description.img);
+        portrait.src = this.parseText(description.img);
 
         let name = node.querySelector(".actorName");
-        name.innerText = this.parsText(description.name);
+        name.innerText = this.parseText(description.name);
 
 
         let monolog = node.querySelector(".monologContent");
@@ -327,10 +327,10 @@ export default class Game {
         }
 
         const portrait = node.querySelector(".portrait");
-        portrait.src = this.parsText(description.img);
+        portrait.src = this.parseText(description.img);
 
         const name = node.querySelector("#actorName");
-        name.innerText = this.parsText(description.name);
+        name.innerText = this.parseText(description.name);
 
 
         const dioalouge = node.querySelector(".dialogueContent");
@@ -371,25 +371,25 @@ export default class Game {
 
     createLinkNode(description) {
         let a = document.createElement("a");
-        a.href = this.parsText(description.url);
+        a.href = this.parseText(description.url);
         a.target = "_blank";
-        a.innerText = this.parsText(description.text)
+        a.innerText = this.parseText(description.text)
         return a;
     }
 
     createTextNode(text) {
         let p = document.createElement("p");
-        p.innerHTML = this.parsText(text);
+        p.innerHTML = this.parseText(text);
         return p;
     }
 
     createShoutNode(text) {
         let h = document.createElement("h1");
-        h.innerHTML = this.parsText(text);
+        h.innerHTML = this.parseText(text);
         return h;
     }
 
-    parsText(text) {
+    parseText(text) {
         if (text) {
             const stateKeys = /{\$\S+}/gm;
             let matches = text.match(stateKeys);
