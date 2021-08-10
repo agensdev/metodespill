@@ -1,6 +1,7 @@
 import d from "./debug.mjs";
 import ErrorMessages from "./l8n.mjs";
 import { copy, merge, validateConditions, animateCSS } from "./util.mjs";
+import Actions from "./actions.mjs";
 import Badges from "./badges.mjs";
 import { Profile } from "./profile.mjs";
 
@@ -232,6 +233,7 @@ export default class Game {
             content.forEach((element) => {
                 if (validateConditions(element.conditions, this.state)) {
                     let node = this.createContentNode(element);
+                    console.log({ node });
                     if (node) {
                         node = contentUI.appendChild(node);
 
@@ -253,20 +255,8 @@ export default class Game {
             let actionsUI = container.querySelector(".actions");
             actions.forEach((action) => {
                 if (validateConditions(action.conditions, this.state)) {
-                    let bt = document.createElement("button");
-                    bt.innerText = this.parseText(action.description);
-                    bt.title = action.title;
-                    bt.onclick = (e) => {
-                        if (action.statechange) {
-                            this.applyStateChanges(action.statechange);
-                        }
-                        this.loadScene(
-                            action.target || this.sceneId,
-                            this.scenes
-                        );
-                    };
-
-                    actionsUI.appendChild(bt);
+                    const createActionNode = Actions[action.type];
+                    actionsUI.appendChild(createActionNode(action, this));
                 }
             });
         }
@@ -338,7 +328,7 @@ export default class Game {
                 node = this.createVideoNode(description);
                 break;
             default:
-                d(`Typen ${description.type} is not a recognized type`);
+                d(`${description.type} is not a recognized content type`);
         }
         return node;
     }

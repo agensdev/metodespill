@@ -56,6 +56,26 @@
                             "value": 0
                         }
                     ]
+                },
+                {
+                    "type": "numberInput",
+                    "target": "TeTime",
+                    "optionalTarget": "NoTeTime",
+                    "answers": [123],
+                    "description": "Fortsett"
+                },
+                {
+                    "type": "multipleChoice",
+                    "target": "TeTime",
+                    "optionalTarget": "NoTeTime",
+                    "answers": ["Riktig svar 1", "Riktig svar 2"],
+                    "choices": [
+                        "Feil svar 1",
+                        "Feil svar 2",
+                        "Riktig svar 1",
+                        "Riktig svar 2"
+                    ],
+                    "description": "Fortsett"
                 }
             ],
             "auxiliaryContent": {
@@ -221,7 +241,7 @@
                     "target": "WhiskeyTime3",
                     "statechange": [
                         {
-                            "type": "inc",
+                            "type": "incr",
                             "target": "drunk",
                             "value": 1
                         }
@@ -292,8 +312,14 @@
                     "type": "button",
                     "title": "stop",
                     "description": "Sett i gang med forskningen",
-                    "target": "forskning1",
-                    "statechange": []
+                    "target": "Velkommen",
+                    "statechange": [
+                        {
+                            "type": "set",
+                            "target": "levelComplete",
+                            "value": true
+                        }
+                    ]
                 }
             ]
         }
