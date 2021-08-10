@@ -1,14 +1,16 @@
-import d from './debug.mjs';
-import ErrorMessages from './l8n.mjs'
-import { copy, merge, validateConditions, animateCSS } from './util.mjs'
-import Badges from './badges.mjs'
-import { Profile } from './profile.mjs'
+import d from "./debug.mjs";
+import ErrorMessages from "./l8n.mjs";
+import { copy, merge, validateConditions, animateCSS } from "./util.mjs";
+import Actions from "./actions.mjs";
+import Badges from "./badges.mjs";
+import { Profile } from "./profile.mjs";
 
 export default class Game {
     constructor(gameID, container, presetState) {
-
         if (Game._instance) {
-            throw new Error("Singleton classes can't be instantiated more than once.")
+            throw new Error(
+                "Singleton classes can't be instantiated more than once."
+            );
         }
         Game._instance = this;
 
@@ -24,10 +26,9 @@ export default class Game {
 
         this.overlay = null;
 
-        this.badges = null;
+        this.badges = [];
 
-        this.player = Profile.storedProfile()
-
+        this.player = Profile.storedProfile();
     }
 
     reset(gameID, container, presetState) {
@@ -40,34 +41,44 @@ export default class Game {
         this.currentSceneData = null;
         this.currentSceneUI = null;
         this.overlay = null;
-        this.badges = null;
+        this.badges = [];
     }
 
     run() {
-        d("Run game")
+        d("Run game");
 
-        if (this.sourceCode.initialState == null || this.sourceCode.initialState == undefined) {
-            this.sourceCode.initialState = {}
+        if (
+            this.sourceCode.initialState == null ||
+            this.sourceCode.initialState == undefined
+        ) {
+            this.sourceCode.initialState = {};
         }
 
-        this.state = this.state ? merge(copy(this.sourceCode.initialState), this.state) : copy(this.sourceCode.initialState);
+        this.state = this.state
+            ? merge(copy(this.sourceCode.initialState), this.state)
+            : copy(this.sourceCode.initialState);
         this.scenes = copy(this.sourceCode.scenes);
-        this.badges = new Badges(this.sourceCode.badges)
+        this.badges = new Badges(this.sourceCode.badges);
 
+        console.log({ prev: this.player.badges });
         this.badges.addPreviouslyEarndBadges(this.player.badges);
 
         this.overlay = document.body.querySelector(".exp");
-        this.overlay.addEventListener("click", e => {
-            d("Remove modal")
-            this.overlay.classList.remove("clickable")
-            animateCSS(this.overlay.firstChild, "fadeOutDownBig").then(evt => {
-                this.overlay.removeChild(this.overlay.firstChild);
-                // Hvorfor virker ikke this.currentSceneUI her?
-                window.document.querySelector(".footer").classList.remove("disabled");
-            });
-        })
+        this.overlay.addEventListener("click", (e) => {
+            d("Remove modal");
+            this.overlay.classList.remove("clickable");
+            animateCSS(this.overlay.firstChild, "fadeOutDownBig").then(
+                (evt) => {
+                    this.overlay.removeChild(this.overlay.firstChild);
+                    // Hvorfor virker ikke this.currentSceneUI her?
+                    window.document
+                        .querySelector(".footer")
+                        .classList.remove("disabled");
+                }
+            );
+        });
 
-        this.loadScene(this.sourceCode.start, this.scenes)
+        this.loadScene(this.sourceCode.start, this.scenes);
     }
 
     loadScene(sceneId, scenes) {
@@ -77,10 +88,12 @@ export default class Game {
 
         let sceneIsReset = false;
         //if (!this.currentSceneUI || this.currentSceneData.clearSceneHistory) {
-        d("Reset scene flow")
+        d("Reset scene flow");
         sceneIsReset = true;
         this.clearScene();
-        this.currentSceneUI = document.querySelector("#sceneTemplate").content.cloneNode(true);
+        this.currentSceneUI = document
+            .querySelector("#sceneTemplate")
+            .content.cloneNode(true);
         this.container.appendChild(this.currentSceneUI);
         this.currentSceneUI = this.container.querySelector("#holder");
         /*} else {
@@ -89,79 +102,93 @@ export default class Game {
         }*/
 
         if (this.currentSceneData) {
-            d("construct scene")
-            this.addBookmark(this.sceneId, this.currentSceneUI.querySelector(".content"));
+            d("construct scene");
+            this.addBookmark(
+                this.sceneId,
+                this.currentSceneUI.querySelector(".content")
+            );
 
-            this.applyStatChanges(this.currentSceneData.statechange);
-            this.applyHeaderImage(this.currentSceneData.headerImage, this.currentSceneUI);
+            this.applyStateChanges(this.currentSceneData.statechange);
+            this.applyHeaderImage(
+                this.currentSceneData.headerImage,
+                this.currentSceneUI
+            );
             this.applyHeader(this.currentSceneData.header, this.currentSceneUI);
-            this.applyContent(this.currentSceneData.content, this.currentSceneUI);
-            this.applyActions(this.currentSceneData.actions, this.currentSceneUI);
-            this.applyAuxiliaryContent(this.currentSceneData.auxiliaryContent, this.currentSceneUI)
+            this.applyContent(
+                this.currentSceneData.content,
+                this.currentSceneUI
+            );
+            this.applyActions(
+                this.currentSceneData.actions,
+                this.currentSceneUI
+            );
+            this.applyAuxiliaryContent(
+                this.currentSceneData.auxiliaryContent,
+                this.currentSceneUI
+            );
 
             let newBadges = this.badges.findNewlyEarndBadges(this.state);
+            console.log({ state: this.state });
             if (newBadges.length > 0) {
-
                 let overlay = document.getElementById("overlay");
 
-                newBadges.forEach(badge => {
+                newBadges.forEach((badge) => {
                     let display = document.createElement("img");
                     display.src = badge.img;
+                    display.alt = badge.name;
                     overlay.appendChild(display);
                     this.player.badges.push(badge);
-
                 });
 
-                this.player.save()
-                overlay.classList.remove("hidden")
+                this.player.save();
+                overlay.classList.remove("hidden");
 
                 overlay.onclick = () => {
-                    overlay.classList.add("hidden")
+                    overlay.classList.add("hidden");
                     overlay.innerHTML = "";
-                }
-
+                };
             }
-
         } else {
             //TODO : skall vi ha falback for feil. ?
         }
-
-
     }
-
 
     addBookmark(bookmarkID, container) {
         const bookmark = document.createElement("a");
-        bookmark.href = `#${bookmarkID}`
+        bookmark.href = `#${bookmarkID}`;
         container.appendChild(bookmark);
     }
 
     disableAllButtonsIn(container) {
         const buttons = container.querySelector("button");
-        buttons.forEach(bt => {
-            bt.setAttribute("disabled", "true")
+        buttons.forEach((bt) => {
+            bt.setAttribute("disabled", "true");
         });
     }
 
-    applyAuxiliaryContent(contnet, container) {
+    applyAuxiliaryContent(content, container) {
         const footer = container.querySelector(".footer");
-        if (contnet && contnet.peek) {
-            const node = document.querySelector("#peekTemplate").content.cloneNode(true);
+        if (content && content.peek) {
+            const node = document
+                .querySelector("#peekTemplate")
+                .content.cloneNode(true);
             const img = node.querySelector("img");
-            img.src = contnet.peek.img;
-            const msg = node.querySelector("#peekMessage")
-            msg.innerText = this.parsText(contnet.peek.text);
-            footer.appendChild(node)
+            img.src = content.peek.img;
+            const msg = node.querySelector("#peekMessage");
+            msg.innerText = this.parseText(content.peek.text);
+            footer.appendChild(node);
 
             footer.addEventListener("click", (e) => {
-                footer.classList.add("disabled")
-                this.displayAuxiliaryContent(this.currentSceneData.auxiliaryContent.content)
-            })
+                footer.classList.add("disabled");
+                this.displayAuxiliaryContent(
+                    this.currentSceneData.auxiliaryContent.content
+                );
+            });
         }
     }
 
     displayAuxiliaryContent(content) {
-        d("Display modal")
+        d("Display modal");
         const container = document.body.querySelector(".exp");
         const modal = document.createElement("div");
         modal.classList.add("modal");
@@ -169,13 +196,12 @@ export default class Game {
         div.classList.add("content");
         modal.appendChild(div);
 
-
-        this.applyContent(content, modal)
+        this.applyContent(content, modal);
 
         container.appendChild(modal);
-        animateCSS(modal, "fadeInUpBig").then(e => {
+        animateCSS(modal, "fadeInUpBig").then((e) => {
             container.classList.add("clickable");
-        })
+        });
     }
 
     applyHeaderImage(headerImage, container) {
@@ -185,14 +211,14 @@ export default class Game {
             header.classList.add("headerWithBgImage");
         } else {
             header.classList.remove("headerWithBgImage");
-            header.style.backgroundImage = ""
+            header.style.backgroundImage = "";
         }
     }
 
     applyHeader(content, container) {
         let header = container.querySelector("header > #headerContent");
         if (content && content.length > 0) {
-            content.forEach(node => {
+            content.forEach((node) => {
                 let p = this.createTextNode(node.text);
                 header.appendChild(p);
             });
@@ -203,10 +229,11 @@ export default class Game {
 
     applyContent(content, container) {
         if (content) {
-            let contentUI = container.querySelector(".content")
-            content.forEach(element => {
+            let contentUI = container.querySelector(".content");
+            content.forEach((element) => {
                 if (validateConditions(element.conditions, this.state)) {
                     let node = this.createContentNode(element);
+                    console.log({ node });
                     if (node) {
                         node = contentUI.appendChild(node);
 
@@ -217,7 +244,6 @@ export default class Game {
                                   animateCSS(node, "bounceInRight");
                               }
                           }*/
-
                     }
                 }
             });
@@ -227,85 +253,95 @@ export default class Game {
     applyActions(actions, container) {
         if (actions) {
             let actionsUI = container.querySelector(".actions");
-            actions.forEach(action => {
+            actions.forEach((action) => {
                 if (validateConditions(action.conditions, this.state)) {
-                    let bt = document.createElement("button");
-                    bt.innerText = this.parsText(action.description);
-                    bt.title = action.title;
-                    bt.onclick = e => {
-                        if (action.statechange) {
-                            this.applyStatChanges(action.statechange);
-                        }
-                        this.loadScene(action.target || this.sceneId, this.scenes);
-                    };
-
-                    actionsUI.appendChild(bt);
+                    const createActionNode = Actions[action.type];
+                    actionsUI.appendChild(createActionNode(action, this));
                 }
             });
         }
     }
 
-    applyStatChanges(changes) {
+    applyStateChanges(changes) {
         if (changes) {
-            changes.forEach(change => {
+            changes.forEach((change) => {
                 switch (change.type) {
-                    case "set": this.state[change.target] = change.value;
+                    case "set":
+                        this.state[change.target] = change.value;
                         break;
 
-                    case "dec": this.state[change.target] = (this.state[change.target] || 0) - change.value;
+                    case "decr":
+                        this.state[change.target] =
+                            Number(this.state[change.target] || 0) -
+                            Number(change.value);
                         break;
 
-                    case "inc": this.state[change.target] = (this.state[change.target] || 0) + change.value;
+                    case "incr":
+                        this.state[change.target] =
+                            Number(this.state[change.target] || 0) +
+                            Number(change.value);
                         break;
 
-
-                    case "apend": this.state[change.target] = (this.state[change.target] || "") + change.value;
+                    case "append":
+                        this.state[change.target] =
+                            (this.state[change.target] || "") + change.value;
                         break;
 
-                    case "remove": this.state[change.target] = (this.state[change.target] || 0).replace(change.value, "");
+                    case "remove":
+                        this.state[change.target] = (
+                            this.state[change.target] || 0
+                        ).replace(change.value, "");
                         break;
 
                     default:
-                        d(`No such state opperation ${change.type}`)
-
+                        d(`Missing state operation ${change.type}`);
                 }
-            })
+            });
         }
     }
 
     createContentNode(description) {
         let node = null;
         switch (description.type) {
-            case "monolog": node = this.createMonologNode(description);
+            case "monolog":
+                node = this.createMonologNode(description);
                 break;
-            case "dialogue": node = this.createDialogueNode(description);
+            case "dialogue":
+                node = this.createDialogueNode(description);
                 break;
-            case "text": node = this.createTextNode(description.text);
+            case "text":
+                node = this.createTextNode(description.text);
                 break;
-            case "shout": node = this.createShoutNode(description.text);
+            case "shout":
+                node = this.createShoutNode(description.text);
                 break;
-            case "shout": node = this.createTextNode(description.text);
+            case "shout":
+                node = this.createTextNode(description.text);
                 break;
-            case "link": node = this.createLinkNode(description);
+            case "link":
+                node = this.createLinkNode(description);
                 break;
-            case "img": node = this.createImageNode(description);
+            case "img":
+                node = this.createImageNode(description);
                 break;
-            case "video": node = this.createVideoNode(description);
+            case "video":
+                node = this.createVideoNode(description);
                 break;
-            default: d(`Typen ${description.type} is not a recognized type`);
+            default:
+                d(`${description.type} is not a recognized content type`);
         }
         return node;
     }
 
     createMonologNode(description) {
-
-        let node = document.querySelector("#monologTemplate").content.cloneNode(true);
+        let node = document
+            .querySelector("#monologTemplate")
+            .content.cloneNode(true);
         let portrait = node.querySelector(".portrait");
-        portrait.src = this.parsText(description.img);
+        portrait.src = this.parseText(description.img);
 
         let name = node.querySelector(".actorName");
-        name.innerText = this.parsText(description.name);
-
+        name.innerText = this.parseText(description.name);
 
         let monolog = node.querySelector(".monologContent");
         let p = this.createTextNode(description.text);
@@ -315,8 +351,9 @@ export default class Game {
     }
 
     createDialogueNode(description) {
-
-        const node = document.querySelector("#dialogueTemplate").content.cloneNode(true);
+        const node = document
+            .querySelector("#dialogueTemplate")
+            .content.cloneNode(true);
         const header = node.querySelector("header");
 
         const aling = description.layout || "right";
@@ -327,11 +364,10 @@ export default class Game {
         }
 
         const portrait = node.querySelector(".portrait");
-        portrait.src = this.parsText(description.img);
+        portrait.src = this.parseText(description.img);
 
         const name = node.querySelector("#actorName");
-        name.innerText = this.parsText(description.name);
-
+        name.innerText = this.parseText(description.name);
 
         const dioalouge = node.querySelector(".dialogueContent");
         const p = this.createTextNode(description.text);
@@ -344,20 +380,23 @@ export default class Game {
         let a = document.createElement("a");
         a.src = "#";
         a.innerText = description.alt;
-        a.classList.add("videoLink")
+        a.classList.add("videoLink");
         a.onclick = () => {
             let overlay = document.getElementById("overlay");
-            overlay.innerHTML = ""
+            overlay.innerHTML = "";
             let frame = document.createElement("iframe");
             overlay.appendChild(frame);
-            frame.setAttribute("src", `https://www.youtube.com/embed/${description.src}`)
-            overlay.classList.remove("hidden")
+            frame.setAttribute(
+                "src",
+                `https://www.youtube.com/embed/${description.src}`
+            );
+            overlay.classList.remove("hidden");
 
             overlay.onclick = () => {
-                overlay.classList.add("hidden")
+                overlay.classList.add("hidden");
                 overlay.innerHTML = "";
-            }
-        }
+            };
+        };
         return a;
     }
 
@@ -371,30 +410,30 @@ export default class Game {
 
     createLinkNode(description) {
         let a = document.createElement("a");
-        a.href = this.parsText(description.url);
+        a.href = this.parseText(description.url);
         a.target = "_blank";
-        a.innerText = this.parsText(description.text)
+        a.innerText = this.parseText(description.text);
         return a;
     }
 
     createTextNode(text) {
         let p = document.createElement("p");
-        p.innerHTML = this.parsText(text);
+        p.innerHTML = this.parseText(text);
         return p;
     }
 
     createShoutNode(text) {
         let h = document.createElement("h1");
-        h.innerHTML = this.parsText(text);
+        h.innerHTML = this.parseText(text);
         return h;
     }
 
-    parsText(text) {
+    parseText(text) {
         if (text) {
             const stateKeys = /{\$\S+}/gm;
             let matches = text.match(stateKeys);
             if (matches) {
-                matches.forEach(match => {
+                matches.forEach((match) => {
                     let key = match.replace(/[{,\$,}]/g, "").trim();
                     let stateValue = this.state[key];
                     text = text.replace(match, stateValue);
@@ -402,11 +441,11 @@ export default class Game {
             }
             return text;
         }
-        return '';
+        return "";
     }
 
     clearScene() {
-        this.container.innerHTML = ""
+        this.container.innerHTML = "";
     }
 
     async load() {
@@ -425,12 +464,11 @@ export default class Game {
     testGame(gameName, source, container, state) {
         this.reset(gameName, container, state);
         this.sourceCode = JSON.parse(source);
-        this.run()
+        this.run();
     }
 
     findScene(sceneId, scenes) {
-        let scene = Object.entries(scenes).find(item => item[0] == sceneId)
+        let scene = Object.entries(scenes).find((item) => item[0] == sceneId);
         return scene ? scene[1] : null;
     }
 }
-
